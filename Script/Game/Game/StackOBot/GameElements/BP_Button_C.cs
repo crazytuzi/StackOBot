@@ -53,7 +53,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
 
             InteractionArea.OnComponentEndOverlap.Add(this, OnComponentEndOverlap);
 
-            ButtonAnimation.TheTimeline.TimelinePostUpdateFunc.Clear();
+            ButtonAnimation.TheTimeline.TimelinePostUpdateFunc.Unbind();
 
             ButtonAnimation.TheTimeline.TimelinePostUpdateFunc.Bind(this, OnTimelinePostUpdateFunc);
         }
@@ -61,15 +61,15 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         [IsOverride]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
-            BP_InteractionComponent.OnInteract.Clear();
+            BP_InteractionComponent.OnInteract.RemoveAll(this);
 
-            BP_InteractionComponent.OnToggleInteractability.Clear();
+            BP_InteractionComponent.OnToggleInteractability.RemoveAll(this);
 
-            InteractionArea.OnComponentBeginOverlap.Clear();
+            InteractionArea.OnComponentBeginOverlap.RemoveAll(this);
 
-            InteractionArea.OnComponentEndOverlap.Clear();
+            InteractionArea.OnComponentEndOverlap.RemoveAll(this);
 
-            ButtonAnimation.TheTimeline.TimelinePostUpdateFunc.Clear();
+            ButtonAnimation.TheTimeline.TimelinePostUpdateFunc.Unbind();
         }
 
         private void OnInteract(Boolean On)
