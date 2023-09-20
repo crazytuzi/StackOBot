@@ -25,7 +25,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         [IsOverride]
         public override void ReceiveBeginPlay()
         {
-            (UGameplayStatics.GetGameInstance(this) as IBPI_GameInstance_C)?.InitSaveGame();
+            // (UGameplayStatics.GetGameInstance(this) as IBPI_GameInstance_C)?.InitSaveGame();
         }
 
         /*

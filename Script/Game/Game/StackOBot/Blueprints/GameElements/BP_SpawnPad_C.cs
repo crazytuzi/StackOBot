@@ -52,7 +52,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * (De)activate the particle effect and switch the material to show a glow or a metal plate.
          */
         [IsOverride]
-        private void ToggleActivation(Boolean On = false)
+        public void ToggleActivation(Boolean On = false)
         {
             if (On)
             {

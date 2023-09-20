@@ -22,7 +22,7 @@ namespace Script.Game.StackOBot.Blueprints.UI
          * Here we get the coin amount from the instance at start and assign an update function to an event dispacther the instance fires when coins get updated.
          */
         [IsOverride]
-        public override void OnInitialized()
+        public override void Construct()
         {
             var GameInstance = UGameplayStatics.GetGameInstance(this);
 
