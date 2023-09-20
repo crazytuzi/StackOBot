@@ -8,6 +8,10 @@ public class StackOBot : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] {"Core", "CoreUObject", "Engine"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine" });
+
+		PublicDependencyModuleNames.AddRange(new string[] { "UnrealCSharp", "UnrealCSharpCore", "Mono" });
+
+		PrivateDependencyModuleNames.AddRange(new string[] { "EnhancedInput" });
 	}
 }
