@@ -62,7 +62,6 @@ namespace Script.Game.StackOBot.Blueprints.UI
          * The game mode calls this, when the game gets saved.
          * It is only playing a widget animation to show it and then it fades out
          */
-        [IsOverride]
         public void ShowSaveText()
         {
             PlayAnimation(ShowSaveTextAnimation);
