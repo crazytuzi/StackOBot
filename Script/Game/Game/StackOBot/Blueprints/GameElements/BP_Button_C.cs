@@ -122,8 +122,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             Button.K2_SetRelativeLocation(
                 new FVector
                 {
-                    X = 0.0f,
-                    Y = 0.0f,
                     Z = ButtonMovement * -10.0f
                 },
                 false,
