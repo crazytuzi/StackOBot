@@ -33,10 +33,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                     Component?.OnInteract.Add(this, OnInteract);
                 }
             }
-
-            RiseRamp.TheTimeline.TimelinePostUpdateFunc.Unbind();
-
-            RiseRamp.TheTimeline.TimelinePostUpdateFunc.Bind(this, OnTimelinePostUpdateFunc);
         }
 
         [IsOverride]
@@ -53,8 +49,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                     Component?.OnInteract.RemoveAll(this);
                 }
             }
-
-            RiseRamp.TheTimeline.TimelinePostUpdateFunc.Unbind();
         }
 
         private void OnInteract(Boolean On = false)
@@ -98,7 +92,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * Using a timeline and an angle specified by the level designer to rotate the ramp up or down.
          */
-        private void OnTimelinePostUpdateFunc()
+        [IsOverride]
+        private void RiseRamp__UpdateFunc()
         {
             var Rise = RiseRamp.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(RiseRamp.TheTimeline.Position);

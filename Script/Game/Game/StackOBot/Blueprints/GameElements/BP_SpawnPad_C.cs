@@ -28,24 +28,12 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             ToggleActivation(IsStartSpawnPad);
 
             ActivationTrigger.OnComponentBeginOverlap.Add(this, OnComponentBeginOverlap);
-
-            Spawn.TheTimeline.TimelinePostUpdateFunc.Unbind();
-
-            Spawn.TheTimeline.TimelinePostUpdateFunc.Bind(this, OnTimelinePostUpdateFunc);
-
-            Spawn.TheTimeline.TimelineFinishedFunc.Unbind();
-
-            Spawn.TheTimeline.TimelineFinishedFunc.Bind(this, TimelineFinishedFunc);
         }
 
         [IsOverride]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             ActivationTrigger.OnComponentBeginOverlap.RemoveAll(this);
-
-            Spawn.TheTimeline.TimelinePostUpdateFunc.Unbind();
-
-            Spawn.TheTimeline.TimelineFinishedFunc.Unbind();
         }
 
         /*
@@ -128,7 +116,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * Check the EnbaleSpawnEffect function in BP_Bot to see how it works.
          * The materials in the bot have a material function handling the visual effects.
          */
-        private void OnTimelinePostUpdateFunc()
+        [IsOverride]
+        private void Spawn__UpdateFunc()
         {
             var RingMovement = Spawn.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(Spawn.TheTimeline.Position);
@@ -153,7 +142,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * When the animation is finished, we enable the input and switch back to the camera in BP_Bot.
          * Then we make the hologrid invisible again.
          */
-        private void TimelineFinishedFunc()
+        [IsOverride]
+        private void Spawn__FinishedFunc()
         {
             var PlayerController = UGameplayStatics.GetPlayerController(this, 0);
 

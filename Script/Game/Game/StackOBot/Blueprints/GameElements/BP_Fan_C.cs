@@ -46,10 +46,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                 StartFan();
             }
 
-            FanRotation.TheTimeline.TimelinePostUpdateFunc.Unbind();
-
-            FanRotation.TheTimeline.TimelinePostUpdateFunc.Bind(this, OnTimelinePostUpdateFunc);
-
             FanArea.OnComponentBeginOverlap.Add(this, OnComponentBeginOverlap);
 
             FanArea.OnComponentEndOverlap.Add(this, OnComponentEndOverlap);
@@ -69,8 +65,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                     Component?.OnInteract.RemoveAll(this);
                 }
             }
-
-            FanRotation.TheTimeline.TimelinePostUpdateFunc.Unbind();
 
             FanArea.OnComponentBeginOverlap.RemoveAll(this);
 
@@ -149,7 +143,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * Start and stop fan (de)activates a particle effect with a ribbon to visualize wind and rotates the fan with a looped timeline.
          */
-        private void OnTimelinePostUpdateFunc()
+        [IsOverride]
+        private void FanRotation__UpdateFunc()
         {
             var RotationSpeed = FanRotation.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(FanRotation.TheTimeline.Position);

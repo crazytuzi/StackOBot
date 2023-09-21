@@ -32,10 +32,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                     Component?.OnInteract.Add(this, OnInteract);
                 }
             }
-
-            Opengate.TheTimeline.TimelinePostUpdateFunc.Unbind();
-
-            Opengate.TheTimeline.TimelinePostUpdateFunc.Bind(this, OnTimelinePostUpdateFunc);
         }
 
         [IsOverride]
@@ -52,8 +48,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                     Component?.OnInteract.RemoveAll(this);
                 }
             }
-
-            Opengate.TheTimeline.TimelinePostUpdateFunc.Unbind();
         }
 
         private void OnInteract(Boolean On = false)
@@ -98,7 +92,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * Open and close door playing a timeline forward or reverse.
          * The numbers for the Y location of the doors were determined through testing and iteration.
          */
-        private void OnTimelinePostUpdateFunc()
+        [IsOverride]
+        private void Opengate__UpdateFunc()
         {
             var DoorOpen = Opengate.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(Opengate.TheTimeline.Position);

@@ -39,10 +39,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             {
                 StartStomper();
             }
-
-            StomperMovement.TheTimeline.TimelinePostUpdateFunc.Unbind();
-
-            StomperMovement.TheTimeline.TimelinePostUpdateFunc.Bind(this, OnTimelinePostUpdateFunc);
         }
 
         [IsOverride]
@@ -56,8 +52,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
 
                 Component.OnInteract.RemoveAll(this);
             }
-            
-            StomperMovement.TheTimeline.TimelinePostUpdateFunc.Unbind();
         }
 
         /*
@@ -82,7 +76,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * Using a curve in a timeline to move the stomper up and down.
          */
-        private void OnTimelinePostUpdateFunc()
+        [IsOverride]
+        private void StomperMovement__UpdateFunc()
         {
             var Movement = StomperMovement.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(StomperMovement.TheTimeline.Position);

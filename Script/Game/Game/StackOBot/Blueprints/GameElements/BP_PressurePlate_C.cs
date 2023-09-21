@@ -46,10 +46,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             Trigger.OnComponentBeginOverlap.Add(this, OnComponentBeginOverlap);
 
             Trigger.OnComponentEndOverlap.Add(this, OnComponentEndOverlap);
-
-            MoveButton.TheTimeline.TimelinePostUpdateFunc.Unbind();
-
-            MoveButton.TheTimeline.TimelinePostUpdateFunc.Bind(this, OnTimelinePostUpdateFunc);
         }
 
         [IsOverride]
@@ -58,8 +54,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             Trigger.OnComponentBeginOverlap.RemoveAll(this);
 
             Trigger.OnComponentEndOverlap.RemoveAll(this);
-
-            MoveButton.TheTimeline.TimelinePostUpdateFunc.Unbind();
         }
 
         /*
@@ -143,7 +137,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             }
         }
 
-        private void OnTimelinePostUpdateFunc()
+        [IsOverride]
+        private void MoveButton__UpdateFunc()
         {
             var ButtonMovement = MoveButton.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(MoveButton.TheTimeline.Position);

@@ -52,10 +52,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             InteractionArea.OnComponentBeginOverlap.Add(this, OnComponentBeginOverlap);
 
             InteractionArea.OnComponentEndOverlap.Add(this, OnComponentEndOverlap);
-
-            ButtonAnimation.TheTimeline.TimelinePostUpdateFunc.Unbind();
-
-            ButtonAnimation.TheTimeline.TimelinePostUpdateFunc.Bind(this, OnTimelinePostUpdateFunc);
         }
 
         [IsOverride]
@@ -68,8 +64,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             InteractionArea.OnComponentBeginOverlap.RemoveAll(this);
 
             InteractionArea.OnComponentEndOverlap.RemoveAll(this);
-
-            ButtonAnimation.TheTimeline.TimelinePostUpdateFunc.Unbind();
         }
 
         private void OnInteract(Boolean On)
@@ -119,7 +113,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * Using a timeline to move the button and change it's emissive.
          * In construction script we created the dynamic material and saved the reference.
          */
-        private void OnTimelinePostUpdateFunc()
+        [IsOverride]
+        private void ButtonAnimation__UpdateFunc()
         {
             var ButtonMovement = ButtonAnimation.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(ButtonAnimation.TheTimeline.Position);

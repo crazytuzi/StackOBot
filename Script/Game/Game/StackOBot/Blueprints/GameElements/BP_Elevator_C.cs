@@ -43,14 +43,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             }
 
             Box.OnComponentBeginOverlap.Add(this, OnComponentBeginOverlap);
-
-            ElevatorMovement.TheTimeline.TimelinePostUpdateFunc.Unbind();
-
-            ElevatorMovement.TheTimeline.TimelinePostUpdateFunc.Bind(this, OnTimelinePostUpdateFunc);
-
-            ElevatorMovement.TheTimeline.TimelineFinishedFunc.Unbind();
-
-            ElevatorMovement.TheTimeline.TimelineFinishedFunc.Bind(this, TimelineFinishedFunc);
         }
 
         [IsOverride]
@@ -75,10 +67,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             }
 
             Box.OnComponentBeginOverlap.RemoveAll(this);
-
-            ElevatorMovement.TheTimeline.TimelinePostUpdateFunc.Unbind();
-
-            ElevatorMovement.TheTimeline.TimelineFinishedFunc.Unbind();
         }
 
         private void OnInteractStartLocation(Boolean On)
@@ -126,7 +114,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * A timeline is used to drive the elevator either to the start or end location.
          */
-        private void OnTimelinePostUpdateFunc()
+        [IsOverride]
+        private void ElevatorMovement__UpdateFunc()
         {
             var Height = ElevatorMovement.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(ElevatorMovement.TheTimeline.Position);
@@ -143,7 +132,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * When finished we update the IsAtEndLocation boolean.
          */
-        private void TimelineFinishedFunc()
+        [IsOverride]
+        private void ElevatorMovement__FinishedFunc()
         {
             IsAtEndLocation = !IsAtEndLocation;
         }
