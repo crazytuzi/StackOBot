@@ -10,9 +10,9 @@ namespace Script.Game.StackOBot.UI.LoadingScreen
     public partial class BPW_LoadingScreen_C
     {
         [IsOverride]
-        public override void Tick(FGeometry MyGeometry, float InDeltaTime)
+        public override void Tick(FGeometry MyGeometry, Single InDeltaTime)
         {
-            if (UKismetMathLibrary.NearlyEqual_FloatFloat(ColorAndOpacity.A, TargetAlpha, 0.0001))
+            if (Math.Abs(ColorAndOpacity.A - TargetAlpha) < 0.000001)
             {
                 SetColorAndOpacity(new FLinearColor
                 {
@@ -43,12 +43,13 @@ namespace Script.Game.StackOBot.UI.LoadingScreen
             }
         }
 
-        [IsOverride]
         public void SetFade(Double TargetAlpha = 0)
         {
             this.TargetAlpha = TargetAlpha;
         }
 
         private Boolean bEnabled = true;
+
+        private Double TargetAlpha = 1.0;
     }
 }
