@@ -137,5 +137,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         {
             IsAtEndLocation = !IsAtEndLocation;
         }
+
+        private Boolean IsAtEndLocation;
     }
 }
