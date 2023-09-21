@@ -24,8 +24,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             OrbMesh.K2_SetWorldRotation(
                 new FRotator
                 {
-                    Roll = 0.0f,
-                    Pitch = 0.0f,
                     Yaw = UKismetMathLibrary.RandomIntegerInRange(0, 15) * 22.5f
                 },
                 false,
@@ -45,13 +43,11 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * Add a bit of rotation per tick
          */
         [IsOverride]
-        public override void ReceiveTick(float DeltaSeconds)
+        public override void ReceiveTick(Single DeltaSeconds)
         {
             OrbMesh.K2_AddLocalRotation(
                 new FRotator
                 {
-                    Roll = 0.0,
-                    Pitch = 0.0,
                     Yaw = DeltaSeconds * 100.0f
                 },
                 false,
@@ -121,13 +117,13 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             var Location = UKismetMathLibrary.VLerp(ActorTransform.GetLocation(),
                                PlayerCharacter.K2_GetActorLocation(),
                                Distance)
-                           + new FVector {Z = Height * 200.0};
+                           + new FVector { Z = Height * 200.0 };
 
             K2_SetActorTransform(new FTransform
                 {
                     Translation = Location,
                     Rotation = K2_GetActorRotation().Quaternion(),
-                    Scale3D = new FVector {X = Scale, Y = Scale, Z = Scale}
+                    Scale3D = new FVector { X = Scale, Y = Scale, Z = Scale }
                 },
                 false,
                 out var SweepHitResult,
@@ -142,5 +138,9 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         {
             K2_DestroyActor();
         }
+
+        private AActor PlayerCharacter;
+
+        private FTransform ActorTransform = new FTransform();
     }
 }
