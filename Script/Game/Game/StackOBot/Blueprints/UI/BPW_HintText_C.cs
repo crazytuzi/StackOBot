@@ -29,7 +29,7 @@ namespace Script.Game.StackOBot.Blueprints.UI
 
             if (PC_InGame != null)
             {
-                InputTypeSwitcherUse.SetActiveWidgetIndex(UKismetMathLibrary.SelectInt(1, 0, PC_InGame.IsUsingGamepad));
+                InputTypeSwitcherUse.SetActiveWidgetIndex(PC_InGame.IsUsingGamepad ? 1 : 0);
             }
         }
     }
