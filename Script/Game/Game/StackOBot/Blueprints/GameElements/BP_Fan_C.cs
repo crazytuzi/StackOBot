@@ -88,7 +88,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             {
                 --TriggersActive;
 
-                TriggersActive = UKismetMathLibrary.Max(TriggersActive, 0);
+                TriggersActive = Math.Max(TriggersActive, 0);
 
                 StopFan();
             }
@@ -102,10 +102,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         {
             if (Active)
             {
-                if (TokenSource != null)
-                {
-                    TokenSource.Cancel();
-                }
+                TokenSource?.Cancel();
 
                 TokenSource = new CancellationTokenSource();
 
@@ -191,8 +188,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
 
                     var LaunchVelocity = A * B + new FVector
                     {
-                        X = 0.0,
-                        Y = 0.0,
                         Z = 20.0
                     };
 
@@ -212,6 +207,10 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                 await Task.Delay(10);
             }
         }
+
+        private Boolean Active;
+
+        private Int32 TriggersActive;
 
         private CancellationTokenSource TokenSource;
     }

@@ -117,6 +117,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                 false);
         }
 
-        private Int32 TriggersActive = 0;
+        private Int32 TriggersActive;
     }
 }
