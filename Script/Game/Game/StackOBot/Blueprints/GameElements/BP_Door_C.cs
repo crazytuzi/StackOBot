@@ -72,7 +72,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                  */
                 --TriggersActive;
 
-                TriggersActive = UKismetMathLibrary.Max(TriggersActive, 0);
+                TriggersActive = Math.Max(TriggersActive, 0);
 
                 CloseDoor();
             }
@@ -101,9 +101,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             DoorRight.K2_SetRelativeLocation(
                 new FVector
                 {
-                    X = 0.0f,
                     Y = DoorOpen * -70.0f + 172,
-                    Z = 0.0f
                 },
                 false,
                 out var SweepHitResultRight,
@@ -112,13 +110,13 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             DoorLeft.K2_SetRelativeLocation(
                 new FVector
                 {
-                    X = 0.0f,
                     Y = DoorOpen * 70.0f + 328,
-                    Z = 0.0f
                 },
                 false,
                 out var SweepHitResultLeft,
                 false);
         }
+
+        private Int32 TriggersActive = 0;
     }
 }
