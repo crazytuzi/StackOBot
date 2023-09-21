@@ -32,7 +32,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
          * The same functionality as at game start (see below) can be triggered when the player "prints" a new robot.
          */
         [IsOverride]
-        private void SpawnPlayerAtActiveSpawnPad()
+        public void SpawnPlayerAtActiveSpawnPad()
         {
             StartingNewPlayer();
         }
