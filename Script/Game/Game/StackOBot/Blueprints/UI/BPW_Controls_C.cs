@@ -1,6 +1,5 @@
 ﻿using System;
 using Script.Common;
-using Script.Engine;
 
 namespace Script.Game.StackOBot.Blueprints.UI
 {
@@ -13,10 +12,9 @@ namespace Script.Game.StackOBot.Blueprints.UI
          * This way is a bit hacky.
          * See in PC_InGame for more info. In proper projects you might need a bit C++ for a full gamepad support.
          */
-        [IsOverride]
         public void ToggleControlDisplay(Boolean IsGamepad = false)
         {
-            InputTypeSwitcher.SetActiveWidgetIndex(UKismetMathLibrary.SelectInt(1, 0, IsGamepad));
+            InputTypeSwitcher.SetActiveWidgetIndex(IsGamepad ? 1 : 0);
         }
     }
 }
