@@ -80,7 +80,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                     {
                         R = 0.225624f,
                         G = 0.980208f,
-                        B = 0.0f,
                         A = 1.0f
                     });
 
@@ -92,7 +91,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                     /*
                      * Animate the plate up depending if something overlaps
                      */
-
                     MoveButton.Play();
 
                     bEnabled = false;
@@ -132,7 +130,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                 /*
                  * Animate the plate down depending if something overlaps
                  */
-
                 MoveButton.Reverse();
             }
         }
@@ -146,8 +143,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             Plate.K2_SetRelativeLocation(
                 new FVector
                 {
-                    X = 0.0f,
-                    Y = 0.0f,
                     Z = ButtonMovement * -10.0f
                 },
                 false,
