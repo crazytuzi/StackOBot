@@ -73,7 +73,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                  */
                 --TriggersActive;
 
-                TriggersActive = UKismetMathLibrary.Max(TriggersActive, 0);
+                TriggersActive = Math.Max(TriggersActive, 0);
 
                 ToLowerLocation();
             }
@@ -101,13 +101,13 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             RampMesh.K2_SetRelativeRotation(
                 new FRotator
                 {
-                    Roll = 0.0f,
                     Pitch = Rise * UpperAngle,
-                    Yaw = 0.0f
                 },
                 false,
                 out var SweepHitResult,
                 false);
         }
+
+        private Int32 TriggersActive;
     }
 }
