@@ -92,7 +92,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                  */
                 --TriggersActive;
 
-                TriggersActive = UKismetMathLibrary.Max(TriggersActive, 0);
+                TriggersActive = Math.Max(TriggersActive, 0);
 
                 SwitchOff();
             }
@@ -115,5 +115,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         {
             LampGlowMaterial.SetScalarParameterValue("Emissive", 0.0f);
         }
+
+        private Int32 TriggersActive;
     }
 }
