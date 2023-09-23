@@ -38,6 +38,66 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         }
 
         /*
+         * Try to find a spawn pad to spawn our robots.
+         */
+        private BP_SpawnPad_C GetActiveSpawnPad()
+        {
+            /*
+             * Do we have a valid reference. Then take that!
+             */
+            if (ActiveSpawnPad != null && ActiveSpawnPad.IsValid())
+            {
+                return ActiveSpawnPad;
+            }
+            else
+            {
+                /*
+                 * If not, we check all actors in the scene.
+                 * If that has the bool IsStartSpawnPad set to true, we save that as active.
+                 * (if more than one has it set, the last in that list will be taken here)
+                 */
+                UGameplayStatics.GetAllActorsOfClass(this, BP_SpawnPad_C.StaticClass(), out var OutActors);
+
+                foreach (var OutActor in OutActors)
+                {
+                    var BP_SpawnPad = Unreal.Cast<BP_SpawnPad_C>(OutActor);
+
+                    if (BP_SpawnPad.IsStartSpawnPad)
+                    {
+                        ActiveSpawnPad = BP_SpawnPad;
+                    }
+                }
+
+                /*
+                 * If we found one, we take that, if not...
+                 */
+                if (ActiveSpawnPad != null && ActiveSpawnPad.IsValid())
+                {
+                    return ActiveSpawnPad;
+                }
+
+                /*
+                 * If not we take the first one in the list, if there is none...
+                 */
+                if (OutActors.Num() > 0)
+                {
+                    ActiveSpawnPad = Unreal.Cast<BP_SpawnPad_C>(OutActors[0]);
+
+                    return ActiveSpawnPad;
+                }
+                else
+                {
+                    /*
+                     * We complain. The game will not be playable.
+                     */
+                    Console.WriteLine("No Spawnpad found!");
+
+                    return null;
+                }
+            }
+        }
+
+        /*
          * This is an overwriteable function in game mode.
          * We do not want the exsiting framework to handle it but do something own here
          */
@@ -56,7 +116,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
              */
             var Max = BPFL_InGame_C.GetMaxBots();
 
-            GetActiveSpawnPad(out var SpawnPad);
+            var SpawnPad = GetActiveSpawnPad();
 
             var Character = SpawnPad.SpawnPlayer(SpawnCounter % Max);
 
@@ -122,5 +182,9 @@ namespace Script.Game.StackOBot.Blueprints.Framework
                 Success = false;
             }
         }
+
+        private BP_SpawnPad_C ActiveSpawnPad;
+
+        private Int32 SpawnCounter;
     }
 }
