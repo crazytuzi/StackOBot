@@ -39,7 +39,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * (De)activate the particle effect and switch the material to show a glow or a metal plate.
          */
-        [IsOverride]
         public void ToggleActivation(Boolean On = false)
         {
             if (On)
@@ -84,11 +83,38 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         }
 
         /*
+         * We spawn the character using an arrow component to set the exact location.
+         * Even as you spawn more robots, you can leave your old one at this exact location.
+         * Given that, we try to adjust our location to avoid colliding but always spawn.
+         * This can lead to issues if you spawn a lot of objects in a single location, you would likely need a more complex ruleset in a full game.
+         */
+        public BP_Bot_C SpawnPlayer(Int32 BotIdx)
+        {
+            var Character = GetWorld().SpawnActor<BP_Bot_C>(PlayerSpawnLocation.K2_GetComponentToWorld(), null, null,
+                ESpawnActorCollisionHandlingMethod.AdjustIfPossibleButAlwaysSpawn);
+
+            Character.BotIdx = BotIdx;
+
+            /*
+             * Possess the new spawned bot
+             */
+            var PlayerController = UGameplayStatics.GetPlayerControllerFromID(this, 0);
+
+            PlayerController.Possess(Character);
+
+            /*
+             * Start the "printing" animation
+             */
+            StartSpawnAnimation(Character);
+
+            return Character;
+        }
+
+        /*
          * This function handles the visual "printing" of the robot and the camera.
          * It also disables the input while the printing is in progress.
          * Called by SpawnPlayer and not part of that function as we use a timeline that only works in the event graph.
          */
-        [IsOverride]
         private void StartSpawnAnimation(BP_Bot_C PlayerCharacter)
         {
             Bot = PlayerCharacter;
@@ -124,8 +150,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
 
             SpawnPadRingMesh.K2_SetRelativeLocation(new FVector
                 {
-                    X = 0.0f,
-                    Y = 0.0f,
                     Z = 200.0f
                 } * RingMovement,
                 false,

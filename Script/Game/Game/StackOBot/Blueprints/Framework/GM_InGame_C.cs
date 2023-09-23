@@ -58,7 +58,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
 
             GetActiveSpawnPad(out var SpawnPad);
 
-            SpawnPad.SpawnPlayer(SpawnCounter % Max, out var Character);
+            var Character = SpawnPad.SpawnPlayer(SpawnCounter % Max);
 
             /*
              * if the amount of spawn characters is >= the max amount robots we allow....
