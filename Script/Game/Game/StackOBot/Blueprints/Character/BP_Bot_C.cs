@@ -27,21 +27,6 @@ namespace Script.Game.StackOBot.Blueprints.Character
         [IsOverride]
         public override void UserConstructionScript()
         {
-            var Material = Mesh.CreateDynamicMaterialInstance(0);
-
-            Materials.Add(Material);
-
-            var Hue = GetHueByIndex();
-
-            Material.SetScalarParameterValue("HueShift", (Single) Hue);
-
-            Material = Mesh.CreateDynamicMaterialInstance(1);
-
-            Materials.Add(Material);
-
-            Material = Jetpack.CreateDynamicMaterialInstance(0);
-
-            Materials.Add(Material);
         }
 
         /*
@@ -615,6 +600,32 @@ namespace Script.Game.StackOBot.Blueprints.Character
             return 1.0f * BotIdx / Max;
         }
 
-        public Int32 BotIdx;
+        private void SetMaterials()
+        {
+            var Material = Mesh.CreateDynamicMaterialInstance(0);
+
+            Materials.Add(Material);
+
+            var Hue = GetHueByIndex();
+
+            Material.SetScalarParameterValue("HueShift", (Single)Hue);
+
+            Material = Mesh.CreateDynamicMaterialInstance(1);
+
+            Materials.Add(Material);
+
+            Material = Jetpack.CreateDynamicMaterialInstance(0);
+
+            Materials.Add(Material);
+        }
+
+        public void SetBotIdx(Int32 InBotIdx)
+        {
+            BotIdx = InBotIdx;
+
+            SetMaterials();
+        }
+
+        private Int32 BotIdx;
     }
 }

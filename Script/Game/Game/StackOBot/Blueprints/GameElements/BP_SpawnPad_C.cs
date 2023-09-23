@@ -93,7 +93,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             var Character = GetWorld().SpawnActor<BP_Bot_C>(PlayerSpawnLocation.K2_GetComponentToWorld(), null, null,
                 ESpawnActorCollisionHandlingMethod.AdjustIfPossibleButAlwaysSpawn);
 
-            Character.BotIdx = BotIdx;
+            Character.SetBotIdx(BotIdx);
 
             /*
              * Possess the new spawned bot
