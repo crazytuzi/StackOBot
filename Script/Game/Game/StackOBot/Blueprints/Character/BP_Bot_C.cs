@@ -31,7 +31,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
 
             Materials.Add(Material);
 
-            GetHueByIndex(out Double Hue);
+            var Hue = GetHueByIndex();
 
             Material.SetScalarParameterValue("HueShift", (Single) Hue);
 
@@ -240,7 +240,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
         private void IA_Interact_Completed(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
             Single TriggeredTime = 0, UInputAction SourceAction = null)
         {
-            GetOverlappingActors(out TArray<AActor> OverlappingActors);
+            GetOverlappingActors(out var OverlappingActors);
 
             if (OverlappingActors.Num() > 0)
             {
@@ -430,7 +430,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
                 true
             );
 
-            GetHueByIndex(out Double Hue);
+            var Hue = GetHueByIndex();
 
             NiagaraComponent.SetColorParameter("AntBotColor", new FLinearColor
             {
@@ -608,11 +608,13 @@ namespace Script.Game.StackOBot.Blueprints.Character
          * The dissolve particle effect uses it as well.
          * The more robots spawned, the slighter the difference in color will be.
          */
-        private void GetHueByIndex(out Double Hue)
+        private Double GetHueByIndex()
         {
             var Max = BPFL_InGame_C.GetMaxBots();
 
-            Hue = 1.0f * BotIdx / Max;
+            return 1.0f * BotIdx / Max;
         }
+
+        public Int32 BotIdx;
     }
 }
