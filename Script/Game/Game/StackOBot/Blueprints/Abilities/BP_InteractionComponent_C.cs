@@ -41,7 +41,6 @@ namespace Script.Game.StackOBot.Blueprints.Abilities
         /*
          * Event to start the Interaction, check if interaction is possible, save the state and call OnInteract so others can react to it
          */
-        [IsOverride]
         public void StartInteraction()
         {
             if (Interactable)
