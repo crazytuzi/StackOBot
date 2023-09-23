@@ -98,5 +98,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
                 (GetHUD() as IBPI_HUD_Interface_C)?.SetPaused(!UGameplayStatics.IsGamePaused(this));
             }
         }
+
+        public Boolean IsUsingGamepad;
     }
 }
