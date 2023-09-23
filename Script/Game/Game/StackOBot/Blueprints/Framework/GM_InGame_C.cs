@@ -54,7 +54,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
              * Give him an index between 0 and max bots.
              * GetMaxBots is a pure library function we can call from anywhere.
              */
-            BPFL_InGame_C.GetMaxBots(this, out var Max);
+            var Max = BPFL_InGame_C.GetMaxBots();
 
             GetActiveSpawnPad(out var SpawnPad);
 

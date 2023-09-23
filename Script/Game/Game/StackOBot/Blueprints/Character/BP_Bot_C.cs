@@ -610,7 +610,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
          */
         private void GetHueByIndex(out Double Hue)
         {
-            BPFL_InGame_C.GetMaxBots(this, out var Max);
+            var Max = BPFL_InGame_C.GetMaxBots();
 
             Hue = 1.0f * BotIdx / Max;
         }
