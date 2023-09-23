@@ -64,7 +64,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
             BindAction(
                 Unreal.LoadObject<UInputAction>(this,
                     "/Game/StackOBot/Input/IA_UnpossesAndSpawnNew.IA_UnpossesAndSpawnNew"),
-                ETriggerEvent.Triggered, IA_UnpossesAndSpawnNew_Triggered);
+                ETriggerEvent.Completed, IA_UnpossesAndSpawnNew_Completed);
         }
 
         /*
@@ -253,7 +253,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
          * INPUT UNPOSSES AND SPAWN NEW: Player can leave the current bot behind and spawn a new one.
          */
         [IsOverride]
-        private void IA_UnpossesAndSpawnNew_Triggered(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
+        private void IA_UnpossesAndSpawnNew_Completed(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
             Single TriggeredTime = 0, UInputAction SourceAction = null)
         {
             /*
