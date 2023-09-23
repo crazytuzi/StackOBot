@@ -194,7 +194,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
 
                 InputVectorAxisDelegateBinding.InputAxisKeyDelegateBindings.Add(Binding);
 
-                Input.BindAxisKey(InputVectorAxisDelegateBinding, InputComponent, this);
+                Input.BindVectorAxis(InputVectorAxisDelegateBinding, InputComponent, this);
             }
         }
 
@@ -222,8 +222,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
 
                 EnhancedInputActionDelegateBinding.InputActionDelegateBindings.Add(Binding);
 
-                Library.EnhancedInput.BindAction(EnhancedInputActionDelegateBinding,
-                    Unreal.Cast<UEnhancedInputComponent>(InputComponent), this);
+                Library.EnhancedInput.BindAction(Binding, Unreal.Cast<UEnhancedInputComponent>(InputComponent), this);
             }
         }
 

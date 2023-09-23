@@ -10,7 +10,7 @@ public:
 	                                                                MonoObject** OutValue);
 
 	static void EnhancedInput_BindActionImplementation(
-		const FGarbageCollectionHandle InEnhancedInputActionDelegateBinding,
+		const FGarbageCollectionHandle InBlueprintEnhancedInputActionBinding,
 		const FGarbageCollectionHandle InEnhancedInputComponent,
 		const FGarbageCollectionHandle InObjectToBindTo);
 };

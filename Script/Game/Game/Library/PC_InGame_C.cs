@@ -188,7 +188,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
 
                 InputVectorAxisDelegateBinding.InputAxisKeyDelegateBindings.Add(Binding);
 
-                Input.BindAxisKey(InputVectorAxisDelegateBinding, InputComponent, this);
+                Input.BindVectorAxis(InputVectorAxisDelegateBinding, InputComponent, this);
             }
         }
 
@@ -216,16 +216,15 @@ namespace Script.Game.StackOBot.Blueprints.Framework
 
                 EnhancedInputActionDelegateBinding.InputActionDelegateBindings.Add(Binding);
 
-                Library.EnhancedInput.BindAction(EnhancedInputActionDelegateBinding,
-                    Unreal.Cast<UEnhancedInputComponent>(InputComponent), this);
+                Library.EnhancedInput.BindAction(Binding, Unreal.Cast<UEnhancedInputComponent>(InputComponent), this);
             }
         }
 
         // @TODO
         public static readonly Dictionary<EKeys, string> EKeys2Name = new Dictionary<EKeys, string>
         {
-            { EKeys.AnyKey, "AnyKey" },
-            { EKeys.F9, "F9" }
+            {EKeys.AnyKey, "AnyKey"},
+            {EKeys.F9, "F9"}
         };
     }
 }

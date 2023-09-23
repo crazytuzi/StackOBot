@@ -13,11 +13,11 @@ namespace Script.Library
             return OutValue != null ? Unreal.Cast<T>(OutValue) : null;
         }
 
-        public static void BindAction(UEnhancedInputActionDelegateBinding InEnhancedInputActionDelegateBinding,
+        public static void BindAction(FBlueprintEnhancedInputActionBinding InBlueprintEnhancedInputActionBinding,
             UEnhancedInputComponent InEnhancedInputComponent, UObject InInObjectToBindTo)
         {
             EnhancedInputImplementation.EnhancedInput_BindActionImplementation(
-                InEnhancedInputActionDelegateBinding.GetHandle(),
+                InBlueprintEnhancedInputActionBinding.GetHandle(),
                 InEnhancedInputComponent.GetHandle(),
                 InInObjectToBindTo.GetHandle());
         }

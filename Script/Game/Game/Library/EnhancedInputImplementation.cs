@@ -12,7 +12,7 @@ namespace Script.Library
             out UDynamicBlueprintBinding OutValue);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        public static extern void EnhancedInput_BindActionImplementation(IntPtr InEnhancedInputActionDelegateBinding,
+        public static extern void EnhancedInput_BindActionImplementation(IntPtr InBlueprintEnhancedInputActionBinding,
             IntPtr InEnhancedInputComponent, IntPtr InObjectToBindTo);
     }
 }

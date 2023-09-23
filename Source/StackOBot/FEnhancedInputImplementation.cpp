@@ -43,17 +43,21 @@ void FEnhancedInputImplementation::EnhancedInput_GetDynamicBindingObjectImplemen
 }
 
 void FEnhancedInputImplementation::EnhancedInput_BindActionImplementation(
-	const FGarbageCollectionHandle InEnhancedInputActionDelegateBinding,
+	const FGarbageCollectionHandle InBlueprintEnhancedInputActionBinding,
 	const FGarbageCollectionHandle InEnhancedInputComponent,
 	const FGarbageCollectionHandle InObjectToBindTo)
 {
-	const auto EnhancedInputActionDelegateBinding = FCSharpEnvironment::GetEnvironment().GetObject<
-		UEnhancedInputActionDelegateBinding>(InEnhancedInputActionDelegateBinding);
+	const auto BlueprintEnhancedInputActionBinding = *static_cast<FBlueprintEnhancedInputActionBinding*>(
+		FCSharpEnvironment::GetEnvironment().GetStruct(InBlueprintEnhancedInputActionBinding));
 
 	const auto EnhancedInputComponent = FCSharpEnvironment::GetEnvironment().GetObject<UEnhancedInputComponent>(
 		InEnhancedInputComponent);
 
 	const auto ObjectToBindTo = FCSharpEnvironment::GetEnvironment().GetObject<UObject>(InObjectToBindTo);
 
-	EnhancedInputActionDelegateBinding->BindToInputComponent(EnhancedInputComponent, ObjectToBindTo);
+	EnhancedInputComponent->BindAction(BlueprintEnhancedInputActionBinding.InputAction,
+	                                   BlueprintEnhancedInputActionBinding.TriggerEvent,
+	                                   ObjectToBindTo,
+	                                   BlueprintEnhancedInputActionBinding.FunctionNameToBind
+	);
 }
