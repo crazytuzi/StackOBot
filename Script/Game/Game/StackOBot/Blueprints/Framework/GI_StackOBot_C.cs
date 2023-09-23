@@ -111,7 +111,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
             {
                 var Sound = Unreal.LoadObject<UMetaSoundSource>(this, "/Game/StackOBot/Audio/SFX_Music.SFX_Music");
 
-                Music = UGameplayStatics.CreateSound2D(this, Sound, (float)Volume, 1.0f, 0.0f, null, true);
+                Music = UGameplayStatics.CreateSound2D(this, Sound, (float) Volume, 1.0f, 0.0f, null, true);
             }
 
             /*
