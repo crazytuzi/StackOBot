@@ -60,7 +60,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          */
         private void InitStomper()
         {
-            StomperMovement.SetNewTime((Single)InitialPos);
+            StomperMovement.SetNewTime((Single) InitialPos);
         }
 
         private void StartStomper()
@@ -85,9 +85,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             Stomper.K2_SetRelativeLocation(
                 new FVector
                 {
-                    X = Movement * -400.0f + 500.0f,
-                    Y = 0.0f,
-                    Z = 0.0f
+                    X = Movement * -400.0f + 500.0f
                 },
                 false,
                 out var SweepHitResult,
