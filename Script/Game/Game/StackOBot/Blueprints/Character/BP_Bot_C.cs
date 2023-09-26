@@ -147,7 +147,11 @@ namespace Script.Game.StackOBot.Blueprints.Character
                 {
                     Yaw = GetControlRotation().Yaw
                 }),
+#if UE_5_1_OR_LATER
+                (Single) UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue)
+#else
                 UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue)
+#endif
             );
         }
 
@@ -165,7 +169,11 @@ namespace Script.Game.StackOBot.Blueprints.Character
                 {
                     Yaw = GetControlRotation().Yaw
                 }),
+#if UE_5_1_OR_LATER
+                (Single) UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue)
+#else
                 UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue)
+#endif
             );
         }
 
@@ -176,14 +184,22 @@ namespace Script.Game.StackOBot.Blueprints.Character
         private void IA_Turn_Triggered(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
             Single TriggeredTime = 0, UInputAction SourceAction = null)
         {
+#if UE_5_1_OR_LATER
+            AddControllerYawInput((Single) UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue));
+#else
             AddControllerYawInput(UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue));
+#endif
         }
 
         [IsOverride]
         private void IA_LookUp_Triggered(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
             Single TriggeredTime = 0, UInputAction SourceAction = null)
         {
+#if UE_5_1_OR_LATER
+            AddControllerPitchInput((Single) UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue));
+#else
             AddControllerPitchInput(UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue));
+#endif
         }
 
         /*
@@ -608,7 +624,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
 
             var Hue = GetHueByIndex();
 
-            Material.SetScalarParameterValue("HueShift", (Single)Hue);
+            Material.SetScalarParameterValue("HueShift", (Single) Hue);
 
             Material = Mesh.CreateDynamicMaterialInstance(1);
 
