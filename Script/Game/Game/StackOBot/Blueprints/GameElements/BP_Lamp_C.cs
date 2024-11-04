@@ -1,8 +1,7 @@
 ﻿using System;
-using Script.Common;
+using Script.CoreUObject;
 using Script.Engine;
 using Script.Game.StackOBot.Blueprints.Abilities;
-using Script.Library;
 
 namespace Script.Game.StackOBot.Blueprints.GameElements
 {
@@ -11,16 +10,16 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
      * For example for a door, when more than one trigger is needed to indicate that a needed trigger like a pressure plate is active.
      * If no tigger is set, the lamp is always switched on.
      */
-    [IsOverride]
+    [Override]
     public partial class BP_Lamp_C
     {
-        [IsOverride]
+        [Override]
         public override void UserConstructionScript()
         {
             LampGlowMaterial = LampMesh.CreateDynamicMaterialInstance(1);
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             // @TODO
@@ -37,8 +36,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                 foreach (var Trigger in Triggers)
                 {
                     var Component =
-                        Unreal.Cast<BP_InteractionComponent_C>(
-                            Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()));
+                        Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()) as
+                            BP_InteractionComponent_C;
 
                     Component?.OnInteract.Add(this, OnInteract);
                 }
@@ -49,7 +48,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             }
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             if (Triggers.Num() > 0)
@@ -57,8 +56,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                 foreach (var Trigger in Triggers)
                 {
                     var Component =
-                        Unreal.Cast<BP_InteractionComponent_C>(
-                            Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()));
+                        Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()) as
+                            BP_InteractionComponent_C;
 
                     Component?.OnInteract.RemoveAll(this);
                 }
@@ -70,7 +69,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * Check there for more details.
          * If you use identical behavior across different actors, consider moving it to its own component.
          */
-        private void OnInteract(Boolean On = false)
+        private void OnInteract(bool On = false)
         {
             if (On)
             {
@@ -116,6 +115,6 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             LampGlowMaterial.SetScalarParameterValue("Emissive", 0.0f);
         }
 
-        private Int32 TriggersActive;
+        private int TriggersActive;
     }
 }

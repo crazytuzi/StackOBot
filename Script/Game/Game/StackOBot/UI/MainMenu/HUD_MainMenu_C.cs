@@ -1,16 +1,15 @@
-using Script.Common;
+using Script.CoreUObject;
 using Script.Engine;
 using Script.Game.StackOBot.Blueprints.Framework;
 using Script.Game.StackOBot.UI.LoadingScreen;
-using Script.Library;
 using Script.UMG;
 
 namespace Script.Game.StackOBot.UI.MainMenu
 {
-    [IsOverride]
+    [Override]
     public partial class HUD_MainMenu_C
     {
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             AddLoadingScreenWidget();
@@ -20,7 +19,7 @@ namespace Script.Game.StackOBot.UI.MainMenu
             PlayMusic();
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             MyLoadingWidget?.DoneFadingEvent.Clear();
@@ -64,7 +63,7 @@ namespace Script.Game.StackOBot.UI.MainMenu
         /*
          * Quit (Interface Event, called by Main Menu Widget)
          */
-        [IsOverride]
+        [Override]
         public void QuitGame()
         {
             var PlayerController = GetOwningPlayerController();
@@ -75,7 +74,7 @@ namespace Script.Game.StackOBot.UI.MainMenu
         /*
          * Load Game (Interface Event, called by Main Menu Widget)
          */
-        [IsOverride]
+        [Override]
         public void LoadGame()
         {
             if (!StartLevelName.Equals("None"))

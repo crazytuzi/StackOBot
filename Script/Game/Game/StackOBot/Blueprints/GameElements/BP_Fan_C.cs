@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Script.Common;
 using Script.CoreUObject;
 using Script.Engine;
 using Script.Game.StackOBot.Blueprints.Abilities;
-using Script.Library;
 
 namespace Script.Game.StackOBot.Blueprints.GameElements
 {
@@ -17,7 +15,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
      * If we don't check, the force would keep being applied to the new spawned character.
      * In a more complex project, you would likely use a different setup than this.
      */
-    [IsOverride]
+    [Override]
     public partial class BP_Fan_C
     {
         /*
@@ -25,7 +23,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * Check there for more details.
          * If you use identical behavior across different actors, consider moving it to its own component.
          */
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             if (Triggers.Num() > 0)
@@ -33,8 +31,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                 foreach (var Trigger in Triggers)
                 {
                     var Component =
-                        Unreal.Cast<BP_InteractionComponent_C>(
-                            Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()));
+                        Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()) as
+                            BP_InteractionComponent_C;
 
                     Component?.OnInteract.Add(this, OnInteract);
                 }
@@ -51,7 +49,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             FanArea.OnComponentEndOverlap.Add(this, OnComponentEndOverlap);
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             if (Triggers.Num() > 0)
@@ -59,8 +57,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                 foreach (var Trigger in Triggers)
                 {
                     var Component =
-                        Unreal.Cast<BP_InteractionComponent_C>(
-                            Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()));
+                        Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()) as
+                            BP_InteractionComponent_C;
 
                     Component?.OnInteract.RemoveAll(this);
                 }
@@ -73,7 +71,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             TokenSource?.Cancel();
         }
 
-        private void OnInteract(Boolean On)
+        private void OnInteract(bool On)
         {
             if (On)
             {
@@ -98,7 +96,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * When the fan is active we want to "blow" the player away from the fan so we start a looping timer
          */
         private void OnComponentBeginOverlap(UPrimitiveComponent OverlappedComponent, AActor OtherActor,
-            UPrimitiveComponent OtherComp, Int32 OtherBodyIndex, Boolean bFromSweep, FHitResult SweepResult)
+            UPrimitiveComponent OtherComp, int OtherBodyIndex, bool bFromSweep, FHitResult SweepResult)
         {
             if (Active)
             {
@@ -114,7 +112,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * Stop the force when player doesnt overlap anymore.
          */
         private void OnComponentEndOverlap(UPrimitiveComponent OverlappedComponent, AActor OtherActor,
-            UPrimitiveComponent OtherComp, Int32 OtherBodyIndex)
+            UPrimitiveComponent OtherComp, int OtherBodyIndex)
         {
             TokenSource?.Cancel();
         }
@@ -140,11 +138,13 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * Start and stop fan (de)activates a particle effect with a ribbon to visualize wind and rotates the fan with a looped timeline.
          */
-        [IsOverride]
+        [Override]
         private void FanRotation__UpdateFunc()
         {
             var RotationSpeed = FanRotation.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(FanRotation.TheTimeline.Position);
+
+            var SweepHitResult = new FHitResult();
 
             Fan.K2_AddLocalRotation(
                 new FRotator
@@ -154,7 +154,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                     Yaw = 0.0
                 },
                 false,
-                out var SweepHitResult,
+                ref SweepHitResult,
                 false);
         }
 
@@ -208,9 +208,9 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             }
         }
 
-        private Boolean Active;
+        private bool Active;
 
-        private Int32 TriggersActive;
+        private int TriggersActive;
 
         private CancellationTokenSource TokenSource;
     }

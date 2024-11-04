@@ -1,8 +1,6 @@
-﻿using System;
-using Script.Common;
+﻿using Script.CoreUObject;
 using Script.Engine;
 using Script.Game.StackOBot.Blueprints.Framework;
-using Script.Library;
 
 namespace Script.Game.StackOBot.Blueprints.UI
 {
@@ -14,14 +12,14 @@ namespace Script.Game.StackOBot.Blueprints.UI
      * But thats a bit hacky.
      * Check the comments in PC_InGame.
      */
-    [IsOverride]
+    [Override]
     public partial class BPW_HeadupDisplay_C
     {
         /*
          * Try to make the UI event driven and avoid binding if you can.
          * Here we get the coin amount from the instance at start and assign an update function to an event dispacther the instance fires when coins get updated.
          */
-        [IsOverride]
+        [Override]
         public override void Construct()
         {
             var GameInstance = UGameplayStatics.GetGameInstance(this);
@@ -30,22 +28,22 @@ namespace Script.Game.StackOBot.Blueprints.UI
 
             SetCoinTxt(Amount);
 
-            var GI_StackOBot = Unreal.Cast<GI_StackOBot_C>(GameInstance);
+            var GI_StackOBot = GameInstance as GI_StackOBot_C;
 
             GI_StackOBot?.OnCoinsUpdated.Add(this, OnCoinsUpdated);
         }
 
-        [IsOverride]
+        [Override]
         public override void Destruct()
         {
             var GameInstance = UGameplayStatics.GetGameInstance(this);
 
-            var GI_StackOBot = Unreal.Cast<GI_StackOBot_C>(GameInstance);
+            var GI_StackOBot = GameInstance as GI_StackOBot_C;
 
             GI_StackOBot?.OnCoinsUpdated.RemoveAll(this);
         }
 
-        private void OnCoinsUpdated(Int32 NewAmount = 0)
+        private void OnCoinsUpdated(int NewAmount = 0)
         {
             SetCoinTxt(NewAmount);
         }
@@ -53,7 +51,7 @@ namespace Script.Game.StackOBot.Blueprints.UI
         /*
          * Its a function as we call this from the init and from the OnCoinUpdated event.
          */
-        private void SetCoinTxt(Int32 Amount = 0)
+        private void SetCoinTxt(int Amount = 0)
         {
             CointsAmount.SetText(UKismetTextLibrary.Conv_IntToText(Amount));
         }

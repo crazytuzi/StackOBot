@@ -1,8 +1,6 @@
-﻿using System;
-using Script.Common;
+﻿using Script.CoreUObject;
 using Script.Engine;
 using Script.Game.StackOBot.Blueprints.Abilities;
-using Script.Library;
 
 namespace Script.Game.StackOBot.Blueprints.GameElements
 {
@@ -10,10 +8,10 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
      * The elevator is another example of how to use the triggers.
      * It has two locations and two triggers we mapped so the elevator goes between them.
      */
-    [IsOverride]
+    [Override]
     public partial class BP_Elevator_C
     {
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             /*
@@ -23,8 +21,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             if (StartLocationTrigger != null && StartLocationTrigger.IsValid())
             {
                 var Component =
-                    Unreal.Cast<BP_InteractionComponent_C>(
-                        StartLocationTrigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()));
+                    StartLocationTrigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()) as
+                        BP_InteractionComponent_C;
 
                 Component.OnInteract.Add(this, OnInteractStartLocation);
             }
@@ -36,8 +34,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             if (EndLocationTrigger != null && EndLocationTrigger.IsValid())
             {
                 var Component =
-                    Unreal.Cast<BP_InteractionComponent_C>(
-                        EndLocationTrigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()));
+                    EndLocationTrigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()) as
+                        BP_InteractionComponent_C;
 
                 Component.OnInteract.Add(this, OnInteractEndLocation);
             }
@@ -45,14 +43,14 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             Box.OnComponentBeginOverlap.Add(this, OnComponentBeginOverlap);
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             if (StartLocationTrigger != null && StartLocationTrigger.IsValid())
             {
                 var Component =
-                    Unreal.Cast<BP_InteractionComponent_C>(
-                        StartLocationTrigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()));
+                    StartLocationTrigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()) as
+                        BP_InteractionComponent_C;
 
                 Component.OnInteract.RemoveAll(this);
             }
@@ -60,8 +58,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             if (EndLocationTrigger != null && EndLocationTrigger.IsValid())
             {
                 var Component =
-                    Unreal.Cast<BP_InteractionComponent_C>(
-                        EndLocationTrigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()));
+                    EndLocationTrigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()) as
+                        BP_InteractionComponent_C;
 
                 Component.OnInteract.RemoveAll(this);
             }
@@ -69,12 +67,12 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             Box.OnComponentBeginOverlap.RemoveAll(this);
         }
 
-        private void OnInteractStartLocation(Boolean On)
+        private void OnInteractStartLocation(bool On)
         {
             MoveToStartLocation();
         }
 
-        private void OnInteractEndLocation(Boolean On)
+        private void OnInteractEndLocation(bool On)
         {
             MoveToEndLocation();
         }
@@ -83,7 +81,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * When the pawn overlaps, we move either to the start or end location
          */
         private void OnComponentBeginOverlap(UPrimitiveComponent OverlappedComponent, AActor OtherActor,
-            UPrimitiveComponent OtherComp, Int32 OtherBodyIndex, Boolean bFromSweep, FHitResult SweepResult)
+            UPrimitiveComponent OtherComp, int OtherBodyIndex, bool bFromSweep, FHitResult SweepResult)
         {
             if (IsAtEndLocation)
             {
@@ -114,7 +112,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * A timeline is used to drive the elevator either to the start or end location.
          */
-        [IsOverride]
+        [Override]
         private void ElevatorMovement__UpdateFunc()
         {
             var Height = ElevatorMovement.TheTimeline.InterpFloats[0].FloatCurve
@@ -122,22 +120,24 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
 
             var NewLocation = UKismetMathLibrary.VLerp(StartLocation, EndLocation, Height);
 
+            var SweepHitResult = new FHitResult();
+
             ElevatorMesh.K2_SetRelativeLocation(
                 NewLocation,
                 false,
-                out var SweepHitResult,
+                ref SweepHitResult,
                 false);
         }
 
         /*
          * When finished we update the IsAtEndLocation boolean.
          */
-        [IsOverride]
+        [Override]
         private void ElevatorMovement__FinishedFunc()
         {
             IsAtEndLocation = !IsAtEndLocation;
         }
 
-        private Boolean IsAtEndLocation;
+        private bool IsAtEndLocation;
     }
 }

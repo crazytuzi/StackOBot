@@ -1,10 +1,7 @@
-﻿using System;
-using Script.Common;
-using Script.CoreUObject;
+﻿using Script.CoreUObject;
 using Script.Engine;
 using Script.Game.StackOBot.Blueprints.Character;
 using Script.Game.StackOBot.Blueprints.Framework;
-using Script.Library;
 
 namespace Script.Game.StackOBot.Blueprints.GameElements
 {
@@ -16,13 +13,13 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
      * The level designer can set IsStartSpawnPad for the first level start.
      * When the player walks over a spawnpad it tells the game mode it is the new active one and it tells the game instance to save the game to disc.
      */
-    [IsOverride]
+    [Override]
     public partial class BP_SpawnPad_C
     {
         /*
          * When this is the start spawn pad, active it
          */
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             ToggleActivation(IsStartSpawnPad);
@@ -30,7 +27,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             ActivationTrigger.OnComponentBeginOverlap.Add(this, OnComponentBeginOverlap);
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             ActivationTrigger.OnComponentBeginOverlap.RemoveAll(this);
@@ -39,7 +36,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * (De)activate the particle effect and switch the material to show a glow or a metal plate.
          */
-        public void ToggleActivation(Boolean On = false)
+        public void ToggleActivation(bool On = false)
         {
             if (On)
             {
@@ -70,9 +67,9 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * The game mode tells the game instance to save and the UI to display a save animation.
          */
         private void OnComponentBeginOverlap(UPrimitiveComponent OverlappedComponent, AActor OtherActor,
-            UPrimitiveComponent OtherComp, Int32 OtherBodyIndex, Boolean bFromSweep, FHitResult SweepResult)
+            UPrimitiveComponent OtherComp, int OtherBodyIndex, bool bFromSweep, FHitResult SweepResult)
         {
-            var GameMode = Unreal.Cast<GM_InGame_C>(UGameplayStatics.GetGameMode(this));
+            var GameMode = UGameplayStatics.GetGameMode(this) as GM_InGame_C;
 
             if (GameMode != null)
             {
@@ -88,10 +85,13 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * Given that, we try to adjust our location to avoid colliding but always spawn.
          * This can lead to issues if you spawn a lot of objects in a single location, you would likely need a more complex ruleset in a full game.
          */
-        public BP_Bot_C SpawnPlayer(Int32 BotIdx)
+        public BP_Bot_C SpawnPlayer(int BotIdx)
         {
-            var Character = GetWorld().SpawnActor<BP_Bot_C>(PlayerSpawnLocation.K2_GetComponentToWorld(), null, null,
-                ESpawnActorCollisionHandlingMethod.AdjustIfPossibleButAlwaysSpawn);
+            var Character = GetWorld().SpawnActor<BP_Bot_C>(PlayerSpawnLocation.K2_GetComponentToWorld(),
+                new FActorSpawnParameters
+                {
+                    SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod.AdjustIfPossibleButAlwaysSpawn
+                });
 
             Character.SetBotIdx(BotIdx);
 
@@ -142,18 +142,20 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * Check the EnbaleSpawnEffect function in BP_Bot to see how it works.
          * The materials in the bot have a material function handling the visual effects.
          */
-        [IsOverride]
+        [Override]
         private void Spawn__UpdateFunc()
         {
             var RingMovement = Spawn.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(Spawn.TheTimeline.Position);
+
+            var SweepHitResult = new FHitResult();
 
             SpawnPadRingMesh.K2_SetRelativeLocation(new FVector
                 {
                     Z = 200.0f
                 } * RingMovement,
                 false,
-                out var SweepHitResult,
+                ref SweepHitResult,
                 false);
 
             var SliceEffect = Spawn.TheTimeline.InterpFloats[1].FloatCurve
@@ -166,7 +168,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * When the animation is finished, we enable the input and switch back to the camera in BP_Bot.
          * Then we make the hologrid invisible again.
          */
-        [IsOverride]
+        [Override]
         private void Spawn__FinishedFunc()
         {
             var PlayerController = UGameplayStatics.GetPlayerController(this, 0);

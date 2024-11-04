@@ -1,8 +1,7 @@
 ﻿using System;
-using Script.Common;
+using Script.CoreUObject;
 using Script.Engine;
 using Script.Game.StackOBot.Blueprints.GameElements;
-using Script.Library;
 
 namespace Script.Game.StackOBot.Blueprints.Framework
 {
@@ -12,7 +11,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
      * This is a singleplayer game.
      * Be aware in a multiplayer game, the game mode would only exist on the server, not the clients
      */
-    [IsOverride]
+    [Override]
     public partial class GM_InGame_C
     {
         /*
@@ -22,7 +21,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
          * But we need the world context to do what we need to do in the save game.
          * Check the game instance for more details.
          */
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             // (UGameplayStatics.GetGameInstance(this) as IBPI_GameInstance_C)?.InitSaveGame();
@@ -31,7 +30,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         /*
          * The same functionality as at game start (see below) can be triggered when the player "prints" a new robot.
          */
-        [IsOverride]
+        [Override]
         public void SpawnPlayerAtActiveSpawnPad()
         {
             StartingNewPlayer();
@@ -56,11 +55,13 @@ namespace Script.Game.StackOBot.Blueprints.Framework
                  * If that has the bool IsStartSpawnPad set to true, we save that as active.
                  * (if more than one has it set, the last in that list will be taken here)
                  */
-                UGameplayStatics.GetAllActorsOfClass(this, BP_SpawnPad_C.StaticClass(), out var OutActors);
+                var OutActors = new TArray<AActor>();
+
+                UGameplayStatics.GetAllActorsOfClass(this, BP_SpawnPad_C.StaticClass(), ref OutActors);
 
                 foreach (var OutActor in OutActors)
                 {
-                    var BP_SpawnPad = Unreal.Cast<BP_SpawnPad_C>(OutActor);
+                    var BP_SpawnPad = OutActor as BP_SpawnPad_C;
 
                     if (BP_SpawnPad.IsStartSpawnPad)
                     {
@@ -81,7 +82,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
                  */
                 if (OutActors.Num() > 0)
                 {
-                    ActiveSpawnPad = Unreal.Cast<BP_SpawnPad_C>(OutActors[0]);
+                    ActiveSpawnPad = OutActors[0] as BP_SpawnPad_C;
 
                     return ActiveSpawnPad;
                 }
@@ -101,7 +102,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
          * This is an overwriteable function in game mode.
          * We do not want the exsiting framework to handle it but do something own here
          */
-        [IsOverride]
+        [Override]
         public override void HandleStartingNewPlayer(APlayerController NewPlayer)
         {
             StartingNewPlayer();
@@ -146,7 +147,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         /*
          * When a bot overlaps with a spawnpad, set that as the new active spawnpad and disable the previous one.
          */
-        public void SetCurrentSpawnPad(BP_SpawnPad_C NewSpawnPad, out Boolean Success)
+        public void SetCurrentSpawnPad(BP_SpawnPad_C NewSpawnPad, out bool Success)
         {
             if (NewSpawnPad != null && NewSpawnPad.IsValid())
             {
@@ -168,7 +169,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
                 /*
                  * Tell the HUD that hot spawned in the player controller to display "saving" on the UI
                  */
-                var PC_InGame = Unreal.Cast<PC_InGame_C>(UGameplayStatics.GetPlayerController(this, 0));
+                var PC_InGame = UGameplayStatics.GetPlayerController(this, 0) as PC_InGame_C;
 
                 PC_InGame.HeadupDisplay.ShowSaveText();
 
@@ -185,6 +186,6 @@ namespace Script.Game.StackOBot.Blueprints.Framework
 
         private BP_SpawnPad_C ActiveSpawnPad;
 
-        private Int32 SpawnCounter;
+        private int SpawnCounter;
     }
 }

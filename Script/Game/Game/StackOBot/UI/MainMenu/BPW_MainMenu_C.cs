@@ -1,9 +1,9 @@
-using Script.Common;
+using Script.CoreUObject;
 using Script.Engine;
 
 namespace Script.Game.StackOBot.UI.MainMenu
 {
-    [IsOverride]
+    [Override]
     public partial class BPW_MainMenu_C
     {
         /*
@@ -11,7 +11,7 @@ namespace Script.Game.StackOBot.UI.MainMenu
          * Then we use an interface implemented in our hud to avoid casting.
          * The HUD handles all the logic for the main menu but the same interface is also implemented into the ingame hud that handles the paus menu in the same way.
          */
-        [IsOverride]
+        [Override]
         public override void Construct()
         {
             UMG_Button_Start.ButtonWidget.OnClicked.Add(this, OnStartButtonClicked);
@@ -19,7 +19,7 @@ namespace Script.Game.StackOBot.UI.MainMenu
             UMG_Button_Quit.ButtonWidget.OnClicked.Add(this, OnQuitButtonClicked);
         }
 
-        [IsOverride]
+        [Override]
         public override void Destruct()
         {
             UMG_Button_Quit.ButtonWidget.OnClicked.Clear();

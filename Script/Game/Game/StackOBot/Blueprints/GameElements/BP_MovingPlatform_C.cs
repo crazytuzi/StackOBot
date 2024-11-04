@@ -1,9 +1,7 @@
-﻿using System;
-using Script.Common;
+﻿using Script.CoreUObject;
 using Script.ControlRig;
 using Script.Engine;
 using Script.Game.StackOBot.Blueprints.Abilities;
-using Script.Library;
 
 namespace Script.Game.StackOBot.Blueprints.GameElements
 {
@@ -12,10 +10,10 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
      * We wanted to give the moving platform a bit more juice, so we added a control rig component that has a verlet simulation to simulate the rotation of the platform depending on its movement.
      * And as with the other objects it can be (de)activated by a trigger that has the BP Interaction component implemented.
      */
-    [IsOverride]
+    [Override]
     public partial class BP_MovingPlatform_C
     {
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             /*
@@ -30,9 +28,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
 
             if (Trigger != null && Trigger.IsValid())
             {
-                var Component =
-                    Unreal.Cast<BP_InteractionComponent_C>(
-                        Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()));
+                var Component = Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()) as BP_InteractionComponent_C;
 
                 Component.OnInteract.Add(this, OnInteract);
             }
@@ -42,14 +38,12 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             ControlRig.OnPostForwardsSolveDelegate.Add(this, OnPostForwardsSolve);
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             if (Trigger != null && Trigger.IsValid())
             {
-                var Component =
-                    Unreal.Cast<BP_InteractionComponent_C>(
-                        Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()));
+                var Component = Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()) as BP_InteractionComponent_C;
 
                 Component.OnInteract.RemoveAll(this);
             }
@@ -64,7 +58,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * For a full game you might want to move the platform back to it's initial positon.
          * We kept it simple for now.
          */
-        private void OnInteract(Boolean On)
+        private void OnInteract(bool On)
         {
             Active = On;
 
@@ -74,7 +68,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * We start and stop the movement by toggling the component tick
          */
-        private void TogglePlatform(Boolean bEnabled)
+        private void TogglePlatform(bool bEnabled)
         {
             InterpToMovement.SetComponentTickEnabled(bEnabled);
         }
@@ -118,11 +112,13 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         {
             var BoneTransform = Component.GetBoneTransform("Platform");
 
+            var SweepHitResult = new FHitResult();
+
             PlatformMesh.K2_SetWorldLocationAndRotation(
                 BoneTransform.GetLocation(),
                 BoneTransform.GetRotation().Rotator(),
                 true,
-                out var SweepHitResult,
+                ref SweepHitResult,
                 false
             );
         }

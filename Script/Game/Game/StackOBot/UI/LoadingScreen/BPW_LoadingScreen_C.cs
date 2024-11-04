@@ -1,16 +1,15 @@
 using System;
-using Script.Common;
 using Script.CoreUObject;
 using Script.Engine;
 using Script.SlateCore;
 
 namespace Script.Game.StackOBot.UI.LoadingScreen
 {
-    [IsOverride]
+    [Override]
     public partial class BPW_LoadingScreen_C
     {
-        [IsOverride]
-        public override void Tick(FGeometry MyGeometry, Single InDeltaTime)
+        [Override]
+        public override void Tick(FGeometry MyGeometry, float InDeltaTime)
         {
             if (Math.Abs(ColorAndOpacity.A - TargetAlpha) < 0.000001)
             {
@@ -43,13 +42,13 @@ namespace Script.Game.StackOBot.UI.LoadingScreen
             }
         }
 
-        public void SetFade(Double TargetAlpha = 0)
+        public void SetFade(double TargetAlpha = 0)
         {
             this.TargetAlpha = TargetAlpha;
         }
 
-        private Boolean bEnabled = true;
+        private bool bEnabled = true;
 
-        private Double TargetAlpha = 1.0;
+        private double TargetAlpha = 1.0;
     }
 }

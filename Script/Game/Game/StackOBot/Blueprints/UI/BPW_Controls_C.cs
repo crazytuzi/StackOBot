@@ -1,9 +1,8 @@
-﻿using System;
-using Script.Common;
+﻿using Script.CoreUObject;
 
 namespace Script.Game.StackOBot.Blueprints.UI
 {
-    [IsOverride]
+    [Override]
     public partial class BPW_Controls_C
     {
         /*
@@ -12,7 +11,7 @@ namespace Script.Game.StackOBot.Blueprints.UI
          * This way is a bit hacky.
          * See in PC_InGame for more info. In proper projects you might need a bit C++ for a full gamepad support.
          */
-        public void ToggleControlDisplay(Boolean IsGamepad = false)
+        public void ToggleControlDisplay(bool IsGamepad = false)
         {
             InputTypeSwitcher.SetActiveWidgetIndex(IsGamepad ? 1 : 0);
         }

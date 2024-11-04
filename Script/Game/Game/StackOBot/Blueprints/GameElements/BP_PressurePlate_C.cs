@@ -1,8 +1,5 @@
-﻿using System;
-using Script.Common;
-using Script.CoreUObject;
+﻿using Script.CoreUObject;
 using Script.Engine;
-using Script.Library;
 
 namespace Script.Game.StackOBot.Blueprints.GameElements
 {
@@ -12,13 +9,13 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
      * This also means more than one thing can be on the plate, so we need to check if an object has been removed.
      * We also need to ensure that the activation is only triggered once.
      */
-    [IsOverride]
+    [Override]
     public partial class BP_PressurePlate_C
     {
         /*
          * Create Dynamic Material and set initial color and emissive
          */
-        [IsOverride]
+        [Override]
         public override void UserConstructionScript()
         {
             var SourceMaterial =
@@ -37,7 +34,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             Mat.SetScalarParameterValue("Emissive", 3.0f);
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             // @TODO
@@ -48,7 +45,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             Trigger.OnComponentEndOverlap.Add(this, OnComponentEndOverlap);
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             Trigger.OnComponentBeginOverlap.RemoveAll(this);
@@ -62,9 +59,11 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * In this way it can be a pawn, a crate or a skeletal mesh mesh in raddoll
          */
         private void OnComponentBeginOverlap(UPrimitiveComponent OverlappedComponent, AActor OtherActor,
-            UPrimitiveComponent OtherComp, Int32 OtherBodyIndex, Boolean bFromSweep, FHitResult SweepResult)
+            UPrimitiveComponent OtherComp, int OtherBodyIndex, bool bFromSweep, FHitResult SweepResult)
         {
-            Trigger.GetOverlappingActors(out var OverlappingActors);
+            var OverlappingActors = new TArray<AActor>();
+
+            Trigger.GetOverlappingActors(ref OverlappingActors);
 
             if (OverlappingActors.Num() >= 1)
             {
@@ -103,9 +102,11 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * Then reset the do once gate so the next activation can be triggered.
          */
         private void OnComponentEndOverlap(UPrimitiveComponent OverlappedComponent, AActor OtherActor,
-            UPrimitiveComponent OtherComp, Int32 OtherBodyIndex)
+            UPrimitiveComponent OtherComp, int OtherBodyIndex)
         {
-            Trigger.GetOverlappingActors(out var OverlappingActors);
+            var OverlappingActors = new TArray<AActor>();
+
+            Trigger.GetOverlappingActors(ref OverlappingActors);
 
             if (OverlappingActors.Num() == 0)
             {
@@ -134,11 +135,13 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             }
         }
 
-        [IsOverride]
+        [Override]
         private void MoveButton__UpdateFunc()
         {
             var ButtonMovement = MoveButton.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(MoveButton.TheTimeline.Position);
+
+            var SweepHitResult = new FHitResult();
 
             Plate.K2_SetRelativeLocation(
                 new FVector
@@ -146,10 +149,10 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                     Z = ButtonMovement * -10.0f
                 },
                 false,
-                out var SweepHitResult,
+                ref SweepHitResult,
                 false);
         }
 
-        private Boolean bEnabled = true;
+        private bool bEnabled = true;
     }
 }

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Script.Common;
 using Script.CoreUObject;
 using Script.Engine;
 using Script.EnhancedInput;
 using Script.Game.StackOBot.Blueprints.Abilities;
 using Script.Game.StackOBot.Blueprints.Framework;
-using Script.Library;
 using Script.Niagara;
 
 namespace Script.Game.StackOBot.Blueprints.Character
@@ -18,13 +15,13 @@ namespace Script.Game.StackOBot.Blueprints.Character
      * As this is a simple singleplayer game with only one playable character we decided to keep it simple.
      * The values in the movement component have been tweaked and iterated to get the feel we wanted.
      */
-    [IsOverride]
+    [Override]
     public partial class BP_Bot_C
     {
         /*
          * Create dynamic material instances and store the references into an array for changing it later when printing and when the bot goes into inactive state. Also set the main color by index.
          */
-        [IsOverride]
+        [Override]
         public override void UserConstructionScript()
         {
         }
@@ -32,39 +29,13 @@ namespace Script.Game.StackOBot.Blueprints.Character
         /*
          * At begin play we assure the first thrust time is as long as the max time in air
          */
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             // @TODO
             UserConstructionScript();
 
             ThrusterTime = ThrusterMaxTime;
-
-            BindAction(Unreal.LoadObject<UInputAction>(this, "/Game/StackOBot/Input/IA_MoveForward.IA_MoveForward"),
-                ETriggerEvent.Triggered, IA_MoveForward_Triggered);
-
-            BindAction(Unreal.LoadObject<UInputAction>(this, "/Game/StackOBot/Input/IA_MoveRight.IA_MoveRight"),
-                ETriggerEvent.Triggered, IA_MoveRight_Triggered);
-
-            BindAction(Unreal.LoadObject<UInputAction>(this, "/Game/StackOBot/Input/IA_Turn.IA_Turn"),
-                ETriggerEvent.Triggered, IA_Turn_Triggered);
-
-            BindAction(Unreal.LoadObject<UInputAction>(this, "/Game/StackOBot/Input/IA_LookUp.IA_LookUp"),
-                ETriggerEvent.Triggered, IA_LookUp_Triggered);
-
-            BindAction(Unreal.LoadObject<UInputAction>(this, "/Game/StackOBot/Input/IA_Jump.IA_Jump"),
-                ETriggerEvent.Started, IA_Jump_Started);
-
-            BindAction(Unreal.LoadObject<UInputAction>(this, "/Game/StackOBot/Input/IA_Jump.IA_Jump"),
-                ETriggerEvent.Completed, IA_Jump_Completed);
-
-            BindAction(Unreal.LoadObject<UInputAction>(this, "/Game/StackOBot/Input/IA_Interact.IA_Interact"),
-                ETriggerEvent.Completed, IA_Interact_Completed);
-
-            BindAction(
-                Unreal.LoadObject<UInputAction>(this,
-                    "/Game/StackOBot/Input/IA_UnpossesAndSpawnNew.IA_UnpossesAndSpawnNew"),
-                ETriggerEvent.Completed, IA_UnpossesAndSpawnNew_Completed);
         }
 
         /*
@@ -72,7 +43,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
          * His location is pushed to a Parameter collection which is used to have the grass and bushes react to him.
          * Be aware that doing complex things in tick can cause performance issues.
          */
-        [IsOverride]
+        [Override]
         public override void ReceiveTick(float DeltaSeconds)
         {
             if (!IsInactive)
@@ -91,7 +62,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
             }
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             TokenSource?.Cancel();
@@ -100,18 +71,18 @@ namespace Script.Game.StackOBot.Blueprints.Character
         /*
          * As we use the enhanced input system, we have to add the mapping context to the controller
          */
-        [IsOverride]
+        [Override]
         public override void ReceivePossessed(AController NewController)
         {
             if (NewController != null)
             {
-                var PlayerController = Unreal.Cast<APlayerController>(NewController);
+                var PlayerController = NewController as APlayerController;
 
                 if (PlayerController != null)
                 {
-                    var EnhancedInputLocalPlayerSubsystem = Unreal.Cast<UEnhancedInputLocalPlayerSubsystem>(
+                    var EnhancedInputLocalPlayerSubsystem =
                         USubsystemBlueprintLibrary.GetLocalPlayerSubSystemFromPlayerController(PlayerController,
-                            UEnhancedInputLocalPlayerSubsystem.StaticClass()));
+                            UEnhancedInputLocalPlayerSubsystem.StaticClass()) as UEnhancedInputLocalPlayerSubsystem;
 
                     EnhancedInputLocalPlayerSubsystem?.AddMappingContext(
                         Unreal.LoadObject<UInputMappingContext>(this,
@@ -123,7 +94,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
         /*
          * When character landed, reset the Jetpack
          */
-        [IsOverride]
+        [Override]
         public override void OnLanded(FHitResult Hit)
         {
             /*
@@ -136,9 +107,8 @@ namespace Script.Game.StackOBot.Blueprints.Character
         /*
          * INPUT: Movement
          */
-        [IsOverride]
-        private void IA_MoveForward_Triggered(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
-            Single TriggeredTime = 0, UInputAction SourceAction = null)
+        public void IA_MoveForward_Triggered(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
         {
             /*
              * Zero out pitch and roll, only move on plane
@@ -148,7 +118,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
                     Yaw = GetControlRotation().Yaw
                 }),
 #if UE_5_1_OR_LATER
-                (Single) UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue)
+                (float) UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue)
 #else
                 UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue)
 #endif
@@ -158,9 +128,8 @@ namespace Script.Game.StackOBot.Blueprints.Character
         /*
          * INPUT: Movement
          */
-        [IsOverride]
-        private void IA_MoveRight_Triggered(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
-            Single TriggeredTime = 0, UInputAction SourceAction = null)
+        public void IA_MoveRight_Triggered(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
         {
             /*
              * Zero out pitch and roll, only move on plane
@@ -170,7 +139,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
                     Yaw = GetControlRotation().Yaw
                 }),
 #if UE_5_1_OR_LATER
-                (Single) UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue)
+                (float) UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue)
 #else
                 UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue)
 #endif
@@ -180,23 +149,21 @@ namespace Script.Game.StackOBot.Blueprints.Character
         /*
          * INPUT: Turning
          */
-        [IsOverride]
-        private void IA_Turn_Triggered(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
-            Single TriggeredTime = 0, UInputAction SourceAction = null)
+        public void IA_Turn_Triggered(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
         {
 #if UE_5_1_OR_LATER
-            AddControllerYawInput((Single) UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue));
+            AddControllerYawInput((float) UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue));
 #else
             AddControllerYawInput(UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue));
 #endif
         }
 
-        [IsOverride]
-        private void IA_LookUp_Triggered(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
-            Single TriggeredTime = 0, UInputAction SourceAction = null)
+        public void IA_LookUp_Triggered(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
         {
 #if UE_5_1_OR_LATER
-            AddControllerPitchInput((Single) UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue));
+            AddControllerPitchInput((float) UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue));
 #else
             AddControllerPitchInput(UEnhancedInputLibrary.Conv_InputActionValueToAxis1D(ActionValue));
 #endif
@@ -206,9 +173,8 @@ namespace Script.Game.StackOBot.Blueprints.Character
          * INPUT Jump & Jetpack: When walking do a regular jump, when in air, start the jetpack.
          * Jetpack can only be used once until character lands again.
          */
-        [IsOverride]
-        private void IA_Jump_Started(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
-            Single TriggeredTime = 0, UInputAction SourceAction = null)
+        public void IA_Jump_Started(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
         {
             if (CharacterMovement.MovementMode is EMovementMode.MOVE_Walking or EMovementMode.MOVE_NavWalking)
             {
@@ -224,9 +190,8 @@ namespace Script.Game.StackOBot.Blueprints.Character
          * INPUT Jump & Jetpack: When walking do a regular jump, when in air, start the jetpack.
          * Jetpack can only be used once until character lands again.
          */
-        [IsOverride]
-        private void IA_Jump_Completed(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
-            Single TriggeredTime = 0, UInputAction SourceAction = null)
+        public void IA_Jump_Completed(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
         {
             StopJumping();
 
@@ -237,11 +202,12 @@ namespace Script.Game.StackOBot.Blueprints.Character
          * INPUT INTERACT: Starts the interaction with an overlapping object that has the BP_Interaction component implemented.
          * Using an Interface call
          */
-        [IsOverride]
-        private void IA_Interact_Completed(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
-            Single TriggeredTime = 0, UInputAction SourceAction = null)
+        public void IA_Interact_Completed(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
         {
-            GetOverlappingActors(out var OverlappingActors);
+            var OverlappingActors = new TArray<AActor>();
+
+            GetOverlappingActors(ref OverlappingActors);
 
             if (OverlappingActors.Num() > 0)
             {
@@ -253,7 +219,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
 
                 if (Component != null)
                 {
-                    var InteractionComponent = Unreal.Cast<BP_InteractionComponent_C>(Component);
+                    var InteractionComponent = Component as BP_InteractionComponent_C;
 
                     /*
                      * Get the button location from the interaction component, allowing the animation blueprint to get the value and feed it into control rig for fullbody IK adjustment of the press button animation
@@ -268,9 +234,8 @@ namespace Script.Game.StackOBot.Blueprints.Character
         /*
          * INPUT UNPOSSES AND SPAWN NEW: Player can leave the current bot behind and spawn a new one.
          */
-        [IsOverride]
-        private void IA_UnpossesAndSpawnNew_Completed(FInputActionValue ActionValue = null, Single ElapsedTime = 0,
-            Single TriggeredTime = 0, UInputAction SourceAction = null)
+        public void IA_UnpossesAndSpawnNew_Completed(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
         {
             /*
              * Disable collision of the capsule and enable (query and physics) on the mesh
@@ -334,22 +299,24 @@ namespace Script.Game.StackOBot.Blueprints.Character
         /*
          * Check if we still standing on something. If not go to ragdoll.
          */
-        private Boolean CheckForSurfaceOrVelocity()
+        private bool CheckForSurfaceOrVelocity()
         {
+            var OutHits = new TArray<FHitResult>();
+
             var bHit = UKismetSystemLibrary.LineTraceMultiForObjects(
                 this,
                 K2_GetActorLocation(),
-                K2_GetActorLocation() - new FVector {Z = 100.0f},
+                K2_GetActorLocation() - new FVector { Z = 100.0f },
                 new TArray<EObjectTypeQuery>
                 {
-                    (EObjectTypeQuery) ECollisionChannel.WorldStatic,
-                    (EObjectTypeQuery) ECollisionChannel.PhysicsBody,
-                    (EObjectTypeQuery) ECollisionChannel.WorldDynamic
+                    (EObjectTypeQuery)ECollisionChannel.WorldStatic,
+                    (EObjectTypeQuery)ECollisionChannel.PhysicsBody,
+                    (EObjectTypeQuery)ECollisionChannel.WorldDynamic
                 },
                 true,
                 new TArray<AActor>(),
                 EDrawDebugTrace.None,
-                out var OutHits,
+                ref OutHits,
                 true,
                 new FLinearColor
                 {
@@ -384,7 +351,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
         {
             await Task.Delay(500);
 
-            var GM_InGame = Unreal.Cast<GM_InGame_C>(UGameplayStatics.GetGameMode(this));
+            var GM_InGame = UGameplayStatics.GetGameMode(this) as GM_InGame_C;
 
             GM_InGame?.SpawnPlayerAtActiveSpawnPad();
         }
@@ -395,13 +362,13 @@ namespace Script.Game.StackOBot.Blueprints.Character
          * Update the parameters in the robot and jetpack material during the spawn effect.
          * Updated by the Spawnpad
          */
-        public void EnableSpawnEffect(Double EnablePrinting = 0, Double SliceZ = 0)
+        public void EnableSpawnEffect(double EnablePrinting = 0, double SliceZ = 0)
         {
             foreach (var Material in Materials)
             {
-                Material.SetScalarParameterValue("EnablePrinting", (Single) EnablePrinting);
+                Material.SetScalarParameterValue("EnablePrinting", (float)EnablePrinting);
 
-                Material.SetScalarParameterValue("SliceZ", (Single) SliceZ);
+                Material.SetScalarParameterValue("SliceZ", (float)SliceZ);
             }
         }
 
@@ -435,7 +402,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
 
             NiagaraComponent.SetColorParameter("AntBotColor", new FLinearColor
             {
-                R = (Single) Hue,
+                R = (float)Hue,
                 A = 1.0f
             });
 
@@ -457,7 +424,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
          * This is called by the jump input when in air or reset when landed.
          * The jetpack and its functionality could become an own component if you would have several characters able to use it.
          */
-        private void ToggleJetpack(Boolean Reset = false, Boolean Activate = false)
+        private void ToggleJetpack(bool Reset = false, bool Activate = false)
         {
             /*
              * If reset, thruster time is set back to max thruster time
@@ -531,7 +498,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
                  * The bot is only launched a bit at start but then the jetpack depletes .
                  */
                 var CurveValue = JetpackBoostCurve.GetFloatValue(
-                    (Single) UKismetMathLibrary.NormalizeToRange(ThrusterMaxTime - ThrusterTime, 0.0f,
+                    (float)UKismetMathLibrary.NormalizeToRange(ThrusterMaxTime - ThrusterTime, 0.0f,
                         ThrusterMaxTime));
 
                 LaunchCharacter(new FVector
@@ -566,15 +533,17 @@ namespace Script.Game.StackOBot.Blueprints.Character
             /*
              * Trace upwards to check if we are "inside"
              */
+            var OutHit = new FHitResult();
+
             var bHit = UKismetSystemLibrary.LineTraceSingle(
                 this,
                 K2_GetActorLocation(),
-                K2_GetActorLocation() + new FVector {Z = 250.0f},
-                (ETraceTypeQuery) ECollisionChannel.Camera,
+                K2_GetActorLocation() + new FVector { Z = 250.0f },
+                (ETraceTypeQuery)ECollisionChannel.Camera,
                 false,
                 new TArray<AActor>(),
                 EDrawDebugTrace.None,
-                out var OutHit,
+                ref OutHit,
                 true,
                 new FLinearColor
                 {
@@ -599,7 +568,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
              */
             var Target = bHit ? 300.0f : Bit;
 
-            CameraBoom.TargetArmLength = (Single) UKismetMathLibrary.FInterpTo(CameraBoom.TargetArmLength, Target,
+            CameraBoom.TargetArmLength = (float)UKismetMathLibrary.FInterpTo(CameraBoom.TargetArmLength, Target,
                 UGameplayStatics.GetWorldDeltaSeconds(this), 2.0f);
         }
 
@@ -609,7 +578,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
          * The dissolve particle effect uses it as well.
          * The more robots spawned, the slighter the difference in color will be.
          */
-        private Double GetHueByIndex()
+        private double GetHueByIndex()
         {
             var Max = BPFL_InGame_C.GetMaxBots();
 
@@ -624,7 +593,7 @@ namespace Script.Game.StackOBot.Blueprints.Character
 
             var Hue = GetHueByIndex();
 
-            Material.SetScalarParameterValue("HueShift", (Single) Hue);
+            Material.SetScalarParameterValue("HueShift", (float)Hue);
 
             Material = Mesh.CreateDynamicMaterialInstance(1);
 
@@ -635,13 +604,13 @@ namespace Script.Game.StackOBot.Blueprints.Character
             Materials.Add(Material);
         }
 
-        public void SetBotIdx(Int32 InBotIdx)
+        public void SetBotIdx(int InBotIdx)
         {
             BotIdx = InBotIdx;
 
             SetMaterials();
         }
 
-        private Int32 BotIdx;
+        private int BotIdx;
     }
 }

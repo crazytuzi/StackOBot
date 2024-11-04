@@ -1,9 +1,9 @@
-using Script.Common;
+using Script.CoreUObject;
 using Script.Engine;
 
 namespace Script.Game.StackOBot.UI.PauseMenu
 {
-    [IsOverride]
+    [Override]
     public partial class BPW_PauseMenu_C
     {
         /*
@@ -11,7 +11,7 @@ namespace Script.Game.StackOBot.UI.PauseMenu
          * Use an interface implemented in the hud to have the logic in one place.
          * The same interface and setup is used in the main menu hud.
          */
-        [IsOverride]
+        [Override]
         public override void Construct()
         {
             UMG_Button_MainMenu.ButtonWidget.OnClicked.Add(this, OnMainMenuButtonClicked);
@@ -23,7 +23,7 @@ namespace Script.Game.StackOBot.UI.PauseMenu
             UMG_Button_Reset.ButtonWidget.OnClicked.Add(this, OnResetMapClicked);
         }
 
-        [IsOverride]
+        [Override]
         public override void Destruct()
         {
             UMG_Button_MainMenu.ButtonWidget.OnClicked.Clear();

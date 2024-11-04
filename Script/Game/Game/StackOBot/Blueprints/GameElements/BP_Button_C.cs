@@ -1,10 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Script.Common;
+﻿using System.Threading.Tasks;
 using Script.CoreUObject;
 using Script.Engine;
 using Script.Game.StackOBot.Blueprints.Character;
-using Script.Library;
 
 namespace Script.Game.StackOBot.Blueprints.GameElements
 {
@@ -13,10 +10,10 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
      * The player needs to press the interaction input button (E).
      * You could use it to also make a lever or another device the player can activate.
      */
-    [IsOverride]
+    [Override]
     public partial class BP_Button_C
     {
-        [IsOverride]
+        [Override]
         public override void UserConstructionScript()
         {
             var SourceMaterial =
@@ -27,7 +24,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             Mat.SetScalarParameterValue("Emissive", 0.0f);
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             // @TODO
@@ -54,7 +51,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             InteractionArea.OnComponentEndOverlap.Add(this, OnComponentEndOverlap);
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             BP_InteractionComponent.OnInteract.RemoveAll(this);
@@ -66,12 +63,12 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             InteractionArea.OnComponentEndOverlap.RemoveAll(this);
         }
 
-        private void OnInteract(Boolean On)
+        private void OnInteract(bool On)
         {
             PressButton();
         }
 
-        private void OnToggleInteraction(Boolean On)
+        private void OnToggleInteraction(bool On)
         {
             HintText.SetVisibility(On);
         }
@@ -86,11 +83,11 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * This button is only ever loaded when BP_Bot is already in memory, but if you were to move it to the main menu level you would increase loading times and memory usages.
          */
         private void OnComponentBeginOverlap(UPrimitiveComponent OverlappedComponent, AActor OtherActor,
-            UPrimitiveComponent OtherComp, Int32 OtherBodyIndex, Boolean bFromSweep, FHitResult SweepResult)
+            UPrimitiveComponent OtherComp, int OtherBodyIndex, bool bFromSweep, FHitResult SweepResult)
         {
             BP_InteractionComponent.StartCharacterOrientationCheck();
 
-            var BP_Bot = Unreal.Cast<BP_Bot_C>(OtherActor);
+            var BP_Bot = OtherActor as BP_Bot_C;
 
             if (BP_Bot != null)
             {
@@ -102,7 +99,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * When the character ends overlapping, stop the orientation check and clear the Interacting Character reference.
          */
         private void OnComponentEndOverlap(UPrimitiveComponent OverlappedComponent, AActor OtherActor,
-            UPrimitiveComponent OtherComp, Int32 OtherBodyIndex)
+            UPrimitiveComponent OtherComp, int OtherBodyIndex)
         {
             BP_InteractionComponent.EndCharacterOrientationCheck();
 
@@ -113,11 +110,13 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          * Using a timeline to move the button and change it's emissive.
          * In construction script we created the dynamic material and saved the reference.
          */
-        [IsOverride]
+        [Override]
         private void ButtonAnimation__UpdateFunc()
         {
             var ButtonMovement = ButtonAnimation.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(ButtonAnimation.TheTimeline.Position);
+
+            var SweepHitResult = new FHitResult();
 
             Button.K2_SetRelativeLocation(
                 new FVector
@@ -125,7 +124,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                     Z = ButtonMovement * -10.0f
                 },
                 false,
-                out var SweepHitResult,
+                ref SweepHitResult,
                 false);
 
             Mat.SetScalarParameterValue("Emissive", ButtonMovement * 5.0f);

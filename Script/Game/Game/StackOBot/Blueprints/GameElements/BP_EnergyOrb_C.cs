@@ -1,10 +1,7 @@
-﻿using System;
-using Script.Common;
-using Script.CoreUObject;
+﻿using Script.CoreUObject;
 using Script.Engine;
 using Script.Game.StackOBot.Blueprints.Framework;
 using Script.Game.StackOBot.Blueprints.SaveGame;
-using Script.Library;
 
 namespace Script.Game.StackOBot.Blueprints.GameElements
 {
@@ -12,28 +9,30 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
      * The orb is the only collectable in this project.
      * If you want more, you could create a parent base class with the standard functionality and create children of them to do handle visuals and data.
      */
-    [IsOverride]
+    [Override]
     public partial class BP_EnergyOrb_C
     {
         /*
          * Set a bit of random starting rotation per instance.
          */
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
+            var SweepHitResult = new FHitResult();
+
             OrbMesh.K2_SetWorldRotation(
                 new FRotator
                 {
                     Yaw = UKismetMathLibrary.RandomIntegerInRange(0, 15) * 22.5f
                 },
                 false,
-                out var SweepHitResult,
+                ref SweepHitResult,
                 false);
 
             OnActorBeginOverlap.Add(this, OnActorBeginOverlapSignature);
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             OnActorBeginOverlap.RemoveAll(this);
@@ -42,16 +41,18 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * Add a bit of rotation per tick
          */
-        [IsOverride]
-        public override void ReceiveTick(Single DeltaSeconds)
+        [Override]
+        public override void ReceiveTick(float DeltaSeconds)
         {
+            var SweepHitResult = new FHitResult();
+
             OrbMesh.K2_AddLocalRotation(
                 new FRotator
                 {
                     Yaw = DeltaSeconds * 100.0f
                 },
                 false,
-                out var SweepHitResult,
+                ref SweepHitResult,
                 false);
         }
 
@@ -102,7 +103,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * Lerp location from actor location to player location with an offset, scaling it down over time.
          */
-        [IsOverride]
+        [Override]
         private void CollectCoinTransition__UpdateFunc()
         {
             var Height = CollectCoinTransition.TheTimeline.InterpFloats[0].FloatCurve
@@ -119,6 +120,8 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                                Distance)
                            + new FVector { Z = Height * 200.0 };
 
+            var SweepHitResult = new FHitResult();
+
             K2_SetActorTransform(new FTransform
                 {
                     Translation = Location,
@@ -126,14 +129,14 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                     Scale3D = new FVector { X = Scale, Y = Scale, Z = Scale }
                 },
                 false,
-                out var SweepHitResult,
+                ref SweepHitResult,
                 false);
         }
 
         /*
          * when animation is finished remove this orb
          */
-        [IsOverride]
+        [Override]
         private void CollectCoinTransition__FinishedFunc()
         {
             K2_DestroyActor();

@@ -1,9 +1,6 @@
-﻿using System;
-using Script.Common;
-using Script.CoreUObject;
+﻿using Script.CoreUObject;
 using Script.Engine;
 using Script.Game.StackOBot.Blueprints.Abilities;
-using Script.Library;
 
 namespace Script.Game.StackOBot.Blueprints.GameElements
 {
@@ -12,10 +9,10 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
      * When no trigger is referenced it move constantly.
      * An assigned trigger, such as the pressure plate, activates and deactivates the stomper.
      */
-    [IsOverride]
+    [Override]
     public partial class BP_Stomper_C
     {
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             /*
@@ -30,8 +27,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             if (Trigger != null && Trigger.IsValid())
             {
                 var Component =
-                    Unreal.Cast<BP_InteractionComponent_C>(
-                        Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()));
+                    Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()) as BP_InteractionComponent_C;
 
                 Component.OnInteract.Add(this, OnInteract);
             }
@@ -41,14 +37,13 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
             }
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             if (Trigger != null && Trigger.IsValid())
             {
                 var Component =
-                    Unreal.Cast<BP_InteractionComponent_C>(
-                        Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()));
+                    Trigger.GetComponentByClass(BP_InteractionComponent_C.StaticClass()) as BP_InteractionComponent_C;
 
                 Component.OnInteract.RemoveAll(this);
             }
@@ -60,7 +55,7 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
          */
         private void InitStomper()
         {
-            StomperMovement.SetNewTime((Single) InitialPos);
+            StomperMovement.SetNewTime((float)InitialPos);
         }
 
         private void StartStomper()
@@ -76,11 +71,13 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
         /*
          * Using a curve in a timeline to move the stomper up and down.
          */
-        [IsOverride]
+        [Override]
         private void StomperMovement__UpdateFunc()
         {
             var Movement = StomperMovement.TheTimeline.InterpFloats[0].FloatCurve
                 .GetFloatValue(StomperMovement.TheTimeline.Position);
+
+            var SweepHitResult = new FHitResult();
 
             Stomper.K2_SetRelativeLocation(
                 new FVector
@@ -88,11 +85,11 @@ namespace Script.Game.StackOBot.Blueprints.GameElements
                     X = Movement * -400.0f + 500.0f
                 },
                 false,
-                out var SweepHitResult,
+                ref SweepHitResult,
                 false);
         }
 
-        private void OnInteract(Boolean On)
+        private void OnInteract(bool On)
         {
             if (On)
             {

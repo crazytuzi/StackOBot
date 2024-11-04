@@ -1,9 +1,7 @@
-﻿using System;
-using Script.Common;
+﻿using Script.CoreUObject;
 using Script.Engine;
 using Script.Game.StackOBot.Blueprints.GameElements;
 using Script.Game.StackOBot.Blueprints.SaveGame;
-using Script.Library;
 using Script.MetasoundEngine;
 
 namespace Script.Game.StackOBot.Blueprints.Framework
@@ -13,7 +11,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
      * In this case we use it to play persitent music and to handle the save game functionality for the project.
      * Under class settings you will find the BPI_GameInstance interface.
      */
-    [IsOverride]
+    [Override]
     public partial class GI_StackOBot_C
     {
         /*
@@ -21,8 +19,8 @@ namespace Script.Game.StackOBot.Blueprints.Framework
          * This project might only have one level right now but in this way we can have a persitent inventory.
          * There is also a Event Dispatcher so the UI can react on a change instead of constantly pulling that information.
          */
-        [IsOverride]
-        public void UpdateOrbs(Int32 Change = 0)
+        [Override]
+        public void UpdateOrbs(int Change = 0)
         {
             CollectedOrbs += Change;
 
@@ -32,8 +30,8 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         /*
          * On begin play, the UI checks how many orbs the player has.
          */
-        [IsOverride]
-        public void GetOrbAmount(out Int32 Amount)
+        [Override]
+        public void GetOrbAmount(out int Amount)
         {
             Amount = CollectedOrbs;
         }
@@ -41,7 +39,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         /*
          * When player overlaps with a spawnpad this is called to dave the data to slots
          */
-        [IsOverride]
+        [Override]
         public void SaveGame()
         {
             SaveGameToSlots();
@@ -53,7 +51,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
          * Here an orb gets removed from the save when collected.
          * Check InitLevelSaveData how it is made.
          */
-        [IsOverride]
+        [Override]
         public void RemoveCollectableFromSaveGame(CollectableObjectData CollectableData = null)
         {
             LevelSaveObject.RemoveCollectable(CollectableData);
@@ -65,7 +63,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
          * For that reason the game mode calls this to initialize and load the player and map data.
          * In a multiplayer game you would do this different as the game mode would only run on the server.
          */
-        [IsOverride]
+        [Override]
         public void InitSaveGame()
         {
             InitPlayerSaveData();
@@ -79,8 +77,8 @@ namespace Script.Game.StackOBot.Blueprints.Framework
          * Called by a button press in the pause menu.
          * Check if a savegame exists, detele it and report back if the task was successful.
          */
-        [IsOverride]
-        public void ResetSaveGame(FString LevelName, out Boolean Success)
+        [Override]
+        public void ResetSaveGame(FString LevelName, out bool Success)
         {
             if (UGameplayStatics.DoesSaveGameExist(LevelName, 0))
             {
@@ -101,8 +99,8 @@ namespace Script.Game.StackOBot.Blueprints.Framework
          * In our case from Main menu to game world and back.
          * As this is 2D UI music we decided to call it from the HUD via the interface
          */
-        [IsOverride]
-        public void PlayMusic(Double Volume = 1.000000)
+        [Override]
+        public void PlayMusic(double Volume = 1.000000)
         {
             /*
              * Create a 2D Sound with our Metasound asset when none is existing yet.
@@ -111,7 +109,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
             {
                 var Sound = Unreal.LoadObject<UMetaSoundSource>(this, "/Game/StackOBot/Audio/SFX_Music.SFX_Music");
 
-                Music = UGameplayStatics.CreateSound2D(this, Sound, (float) Volume, 1.0f, 0.0f, null, true);
+                Music = UGameplayStatics.CreateSound2D(this, Sound, (float)Volume, 1.0f, 0.0f, null, true);
             }
 
             /*
@@ -130,8 +128,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
                 /*
                  * If a save game with SaveGameSlotName exists, load it, cast to the one we made and store that.
                  */
-                var PlayerSaveObject =
-                    Unreal.Cast<PlayerSaveObject_C>(UGameplayStatics.LoadGameFromSlot(SaveGameSlotName, 0));
+                var PlayerSaveObject = UGameplayStatics.LoadGameFromSlot(SaveGameSlotName, 0) as PlayerSaveObject_C;
 
                 if (PlayerSaveObject != null)
                 {
@@ -187,8 +184,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
                 /*
                  * When a save game for this level exists, we store the object reference.
                  */
-                var LoadLevelSaveObject =
-                    Unreal.Cast<LevelSaveObject_C>(UGameplayStatics.LoadGameFromSlot(CurrentLevelName, 0));
+                var LoadLevelSaveObject = UGameplayStatics.LoadGameFromSlot(CurrentLevelName, 0) as LevelSaveObject_C;
 
                 if (LoadLevelSaveObject != null)
                 {
@@ -199,7 +195,9 @@ namespace Script.Game.StackOBot.Blueprints.Framework
                  * Next we iterate over all BP Energy Orbs in the level and remove them.
                  * You could have a parent class for all collectables and the Orb being a child of that if you want different collectables.
                  */
-                UGameplayStatics.GetAllActorsOfClass(this, BP_EnergyOrb_C.StaticClass(), out var OutActors);
+                var OutActors = new TArray<AActor>();
+
+                UGameplayStatics.GetAllActorsOfClass(this, BP_EnergyOrb_C.StaticClass(), ref OutActors);
 
                 foreach (var OutActor in OutActors)
                 {
@@ -215,7 +213,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
 
                 foreach (var CollectablePickup in CollectablePickups)
                 {
-                    GetWorld().SpawnActor<AActor>(CollectablePickup.ActorClass.Get(), CollectablePickup.Transform);
+                    GetWorld().SpawnActor<AActor>(CollectablePickup.ActorClass, CollectablePickup.Transform);
                 }
             }
             else
@@ -231,7 +229,9 @@ namespace Script.Game.StackOBot.Blueprints.Framework
                  * We use the struct that contains only the class and actor transform and no reference.
                  * Check above how the savegame is restored.
                  */
-                UGameplayStatics.GetAllActorsOfClass(this, BP_EnergyOrb_C.StaticClass(), out var OutActors);
+                var OutActors = new TArray<AActor>();
+
+                UGameplayStatics.GetAllActorsOfClass(this, BP_EnergyOrb_C.StaticClass(), ref OutActors);
 
                 foreach (var OutActor in OutActors)
                 {

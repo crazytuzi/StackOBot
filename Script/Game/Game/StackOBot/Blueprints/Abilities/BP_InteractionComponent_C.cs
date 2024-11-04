@@ -1,7 +1,6 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Script.Common;
+using Script.CoreUObject;
 using Script.Engine;
 
 namespace Script.Game.StackOBot.Blueprints.Abilities
@@ -9,10 +8,10 @@ namespace Script.Game.StackOBot.Blueprints.Abilities
     /*
      * This component can be added to triggers like BP_Button and provides some general functionality for player character interaction
      */
-    [IsOverride]
+    [Override]
     public partial class BP_InteractionComponent_C
     {
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             TokenSource?.Cancel();
@@ -126,8 +125,8 @@ namespace Script.Game.StackOBot.Blueprints.Abilities
 
         private CancellationTokenSource TokenSource;
 
-        private Boolean bDoEnable = true;
+        private bool bDoEnable = true;
 
-        private Boolean bDoDisable = true;
+        private bool bDoDisable = true;
     }
 }

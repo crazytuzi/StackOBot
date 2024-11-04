@@ -1,11 +1,12 @@
-﻿using System;
-using Script.Common;
+﻿using Script.CoreUObject;
 using Script.Engine;
 using Script.EnhancedInput;
+using Script.Game.StackOBot.Blueprints.Character;
 using Script.Game.StackOBot.Blueprints.UI;
+using Script.Game.StackOBot.Input;
 using Script.Game.StackOBot.UI;
 using Script.InputCore;
-using Script.Library;
+using Script.StackOBot;
 using Script.UMG;
 
 namespace Script.Game.StackOBot.Blueprints.Framework
@@ -13,10 +14,10 @@ namespace Script.Game.StackOBot.Blueprints.Framework
     /*
      * Here the player controler handles the player camera manager, we add the hud and input that's not relavted to the character.
      */
-    [IsOverride]
+    [Override]
     public partial class PC_InGame_C
     {
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             (UGameplayStatics.GetGameInstance(this) as IBPI_GameInstance_C)?.InitSaveGame();
@@ -43,12 +44,67 @@ namespace Script.Game.StackOBot.Blueprints.Framework
 
             HeadupDisplay.AddToViewport();
 
-            BindKey(EKeys.AnyKey, EInputEvent.IE_Pressed, AnyKey_Pressed);
+            InputComponent.BindKey(EKeys.AnyKey, EInputEvent.IE_Pressed, this, AnyKey_Pressed);
 
-            BindAction(Unreal.LoadObject<UInputAction>(this, "/Game/StackOBot/Input/IA_Pause.IA_Pause"),
-                ETriggerEvent.Triggered, IA_Pause_Triggered);
+            InputComponent.BindKey(EKeys.F9, EInputEvent.IE_Pressed, this, F9_Pressed);
 
-            BindKey(EKeys.F9, EInputEvent.IE_Pressed, F9_Pressed);
+            var EnhancedInputComponent = InputComponent as UEnhancedInputComponent;
+
+            Pause_Triggered =
+                EnhancedInputComponent.BindAction<IA_Pause>(ETriggerEvent.Triggered, this, IA_Pause_Triggered);
+
+            MoveForward_Triggered =
+                EnhancedInputComponent.BindAction<IA_MoveForward>(ETriggerEvent.Triggered, this,
+                    IA_MoveForward_Triggered);
+
+            MoveRight_Triggered =
+                EnhancedInputComponent.BindAction<IA_MoveRight>(ETriggerEvent.Triggered, this, IA_MoveRight_Triggered);
+
+            Turn_Triggered =
+                EnhancedInputComponent.BindAction<IA_Turn>(ETriggerEvent.Triggered, this, IA_Turn_Triggered);
+
+            LookUp_Triggered =
+                EnhancedInputComponent.BindAction<IA_LookUp>(ETriggerEvent.Triggered, this, IA_LookUp_Triggered);
+
+            Jump_Started = EnhancedInputComponent.BindAction<IA_Jump>(ETriggerEvent.Started, this, IA_Jump_Started);
+
+            Jump_Completed =
+                EnhancedInputComponent.BindAction<IA_Jump>(ETriggerEvent.Completed, this, IA_Jump_Completed);
+
+            Interact_Completed =
+                EnhancedInputComponent.BindAction<IA_Interact>(ETriggerEvent.Completed, this, IA_Interact_Completed);
+
+            UnpossesAndSpawnNew_Completed =
+                EnhancedInputComponent.BindAction<IA_UnpossesAndSpawnNew>(ETriggerEvent.Completed, this,
+                    IA_UnpossesAndSpawnNew_Completed);
+        }
+
+        [Override]
+        public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
+        {
+            InputComponent.RemoveActionBinding(this, EKeys.AnyKey.KeyName, EInputEvent.IE_Pressed, AnyKey_Pressed);
+
+            InputComponent.RemoveActionBinding(this, EKeys.F9.KeyName, EInputEvent.IE_Pressed, F9_Pressed);
+
+            var EnhancedInputComponent = InputComponent as UEnhancedInputComponent;
+
+            EnhancedInputComponent.RemoveAction(this, Pause_Triggered, IA_Pause_Triggered);
+
+            EnhancedInputComponent.RemoveAction(this, MoveForward_Triggered, IA_MoveForward_Triggered);
+
+            EnhancedInputComponent.RemoveAction(this, MoveRight_Triggered, IA_MoveRight_Triggered);
+
+            EnhancedInputComponent.RemoveAction(this, Turn_Triggered, IA_Turn_Triggered);
+
+            EnhancedInputComponent.RemoveAction(this, LookUp_Triggered, IA_LookUp_Triggered);
+
+            EnhancedInputComponent.RemoveAction(this, Jump_Started, IA_Jump_Started);
+
+            EnhancedInputComponent.RemoveAction(this, Jump_Completed, IA_Jump_Completed);
+
+            EnhancedInputComponent.RemoveAction(this, Interact_Completed, IA_Interact_Completed);
+
+            EnhancedInputComponent.RemoveAction(this, UnpossesAndSpawnNew_Completed, IA_UnpossesAndSpawnNew_Completed);
         }
 
         /*
@@ -61,7 +117,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
          * Especially on startup or reloading the map, you can not easily know what the last input device was.
          * Important to know that this event doesnt consume the input.
          */
-        [IsOverride]
+        [Override]
         private void AnyKey_Pressed(FKey Key = null)
         {
             var bIsGamepadKey = UKismetInputLibrary.Key_IsGamepadKey(Key);
@@ -80,9 +136,9 @@ namespace Script.Game.StackOBot.Blueprints.Framework
          * Think of the controller being the brain and the pawn being the body executing the brains commands.
          * That said we made the conscious decision to keep the input for the character in BP_Bot
          */
-        [IsOverride]
-        private void IA_Pause_Triggered(FInputActionValue ActionValue = null, Single ElapsedTime = 0.0f,
-            Single TriggeredTime = 0.0f, UInputAction SourceAction = null)
+        [Override]
+        private void IA_Pause_Triggered(FInputActionValue ActionValue = null, float ElapsedTime = 0.0f,
+            float TriggeredTime = 0.0f, UInputAction SourceAction = null)
         {
             (GetHUD() as IBPI_HUD_Interface_C)?.SetPaused(!UGameplayStatics.IsGamePaused(this));
         }
@@ -90,7 +146,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         /*
          * F5 only in editor not packaged build as Escape closed play in editor.
          */
-        [IsOverride]
+        [Override]
         private void F9_Pressed(FKey Key = null)
         {
             if (!UKismetSystemLibrary.IsPackagedForDistribution())
@@ -99,6 +155,80 @@ namespace Script.Game.StackOBot.Blueprints.Framework
             }
         }
 
-        public Boolean IsUsingGamepad;
+        [Override]
+        private void IA_MoveForward_Triggered(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
+        {
+            (Pawn as BP_Bot_C)?.IA_MoveForward_Triggered(ActionValue, ElapsedTime, TriggeredTime, SourceAction);
+        }
+
+        [Override]
+        private void IA_MoveRight_Triggered(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
+        {
+            (Pawn as BP_Bot_C)?.IA_MoveRight_Triggered(ActionValue, ElapsedTime, TriggeredTime, SourceAction);
+        }
+
+        [Override]
+        private void IA_Turn_Triggered(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
+        {
+            (Pawn as BP_Bot_C)?.IA_Turn_Triggered(ActionValue, ElapsedTime, TriggeredTime, SourceAction);
+        }
+
+        [Override]
+        private void IA_LookUp_Triggered(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
+        {
+            (Pawn as BP_Bot_C)?.IA_LookUp_Triggered(ActionValue, ElapsedTime, TriggeredTime, SourceAction);
+        }
+
+        [Override]
+        private void IA_Jump_Started(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
+        {
+            (Pawn as BP_Bot_C)?.IA_Jump_Started(ActionValue, ElapsedTime, TriggeredTime, SourceAction);
+        }
+
+        [Override]
+        private void IA_Jump_Completed(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
+        {
+            (Pawn as BP_Bot_C)?.IA_Jump_Completed(ActionValue, ElapsedTime, TriggeredTime, SourceAction);
+        }
+
+        [Override]
+        private void IA_Interact_Completed(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
+        {
+            (Pawn as BP_Bot_C)?.IA_Interact_Completed(ActionValue, ElapsedTime, TriggeredTime, SourceAction);
+        }
+
+        [Override]
+        private void IA_UnpossesAndSpawnNew_Completed(FInputActionValue ActionValue = null, float ElapsedTime = 0,
+            float TriggeredTime = 0, UInputAction SourceAction = null)
+        {
+            (Pawn as BP_Bot_C)?.IA_UnpossesAndSpawnNew_Completed(ActionValue, ElapsedTime, TriggeredTime, SourceAction);
+        }
+
+        public bool IsUsingGamepad;
+
+        private FEnhancedInputActionEventBinding Pause_Triggered;
+
+        private FEnhancedInputActionEventBinding MoveForward_Triggered;
+
+        private FEnhancedInputActionEventBinding MoveRight_Triggered;
+
+        private FEnhancedInputActionEventBinding Turn_Triggered;
+
+        private FEnhancedInputActionEventBinding LookUp_Triggered;
+
+        private FEnhancedInputActionEventBinding Jump_Started;
+
+        private FEnhancedInputActionEventBinding Jump_Completed;
+
+        private FEnhancedInputActionEventBinding Interact_Completed;
+
+        private FEnhancedInputActionEventBinding UnpossesAndSpawnNew_Completed;
     }
 }

@@ -1,12 +1,11 @@
-﻿using System;
-using Script.Common;
+﻿using Script.CoreUObject;
 
 namespace Script.Game.StackOBot.Blueprints.Framework
 {
-    [IsOverride]
+    [Override]
     public partial class BPFL_InGame_C
     {
-        public static Int32 GetMaxBots()
+        public static int GetMaxBots()
         {
             return 8;
         }

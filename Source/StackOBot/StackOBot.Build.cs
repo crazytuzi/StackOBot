@@ -12,6 +12,6 @@ public class StackOBot : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "UnrealCSharp", "UnrealCSharpCore", "Mono" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "EnhancedInput" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "InputCore", "EnhancedInput" });
 	}
 }

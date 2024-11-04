@@ -1,9 +1,8 @@
 ﻿using System;
-using Script.Common;
+using Script.CoreUObject;
 using Script.Engine;
 using Script.Game.StackOBot.UI.LoadingScreen;
 using Script.Game.StackOBot.UI.PauseMenu;
-using Script.Library;
 using Script.UMG;
 
 namespace Script.Game.StackOBot.Blueprints.Framework
@@ -11,10 +10,10 @@ namespace Script.Game.StackOBot.Blueprints.Framework
     /*
      * We use the HUD to handle the pause menu, loading screen and it starts the music in the game instance.
      */
-    [IsOverride]
+    [Override]
     public partial class HUD_InGame_C
     {
-        [IsOverride]
+        [Override]
         public override void ReceiveBeginPlay()
         {
             /*
@@ -41,7 +40,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
             (UGameplayStatics.GetGameInstance(this) as IBPI_GameInstance_C)?.PlayMusic(0.5);
         }
 
-        [IsOverride]
+        [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
             if (LoadingWidget != null && LoadingWidget.IsValid())
@@ -53,7 +52,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         /*
          * Reset The Level
          */
-        [IsOverride]
+        [Override]
         public void LoadGame()
         {
             LoadALevel(UGameplayStatics.GetCurrentLevelName(this).ToString());
@@ -62,7 +61,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         /*
          * Load Main Menu Map
          */
-        [IsOverride]
+        [Override]
         public void LoadMenu()
         {
             LoadALevel(MainMenuLevelName);
@@ -71,7 +70,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         /*
          * Quit (Interface Event, called by Pause Menu Widget)
          */
-        [IsOverride]
+        [Override]
         public void QuitGame()
         {
             UKismetSystemLibrary.QuitGame(this, GetOwningPlayerController(), EQuitPreference.Quit, false);
@@ -80,8 +79,8 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         /*
          * Pause and Unpause (Interface Event)
          */
-        [IsOverride]
-        public void SetPaused(Boolean Paused = false)
+        [Override]
+        public void SetPaused(bool Paused = false)
         {
             if (Paused)
             {
@@ -114,7 +113,7 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         /*
          * Interface call from the reset button in pause menu in order to delete the save game data and reload the level.
          */
-        [IsOverride]
+        [Override]
         public void ResetMap()
         {
             var CurrentLevelName = UGameplayStatics.GetCurrentLevelName(this);
