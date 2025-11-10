@@ -82,9 +82,9 @@ namespace Script.Game.StackOBot.Blueprints.Framework
         [Override]
         public override void ReceiveEndPlay(EEndPlayReason EndPlayReason)
         {
-            InputComponent.RemoveActionBinding(this, EKeys.AnyKey.KeyName, EInputEvent.IE_Pressed, AnyKey_Pressed);
+            InputComponent.RemoveKey(EKeys.AnyKey, EInputEvent.IE_Pressed, this, AnyKey_Pressed);
 
-            InputComponent.RemoveActionBinding(this, EKeys.F9.KeyName, EInputEvent.IE_Pressed, F9_Pressed);
+            InputComponent.RemoveKey(EKeys.F9, EInputEvent.IE_Pressed, this, F9_Pressed);
 
             var EnhancedInputComponent = InputComponent as UEnhancedInputComponent;
 
